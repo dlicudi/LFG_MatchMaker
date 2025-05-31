@@ -1253,34 +1253,6 @@
 		
 		<Size x="225" y="75" />
 		
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture name="$parentBackground" file="Interface\FriendsFrame\UI-Toast-Background" setAllPoints="true" />
-				<Texture name="$parentBorder" file="Interface\DialogFrame\UI-DialogBox-Border" setAllPoints="true" />
-			</Layer>
-			<Layer level="OVERLAY">
-				<Texture name="LFGMM_BroadcastWindow_Header" file="Interface\DialogFrame\UI-DialogBox-Header">
-					<Anchors>
-						<Anchor point="TOP">
-							<Offset x="0" y="15" />
-						</Anchor>
-					</Anchors>
-
-					<Size x="330" y="64" />
-				</Texture>
-				
-				<FontString name="LFGMM_BroadcastWindow_Title" text="Broadcast available" inherits="GameFontNormal">
-					<Anchors>
-						<Anchor point="CENTER" relativeTo="LFGMM_BroadcastWindow_Header">
-							<Offset x="0" y="11" />
-						</Anchor>
-					</Anchors>
-
-					<Color a="1" r="0" g="1" b="0" />
-				</FontString>
-			</Layer>
-		</Layers>
-		
 		<Frames>
 			<Button name="LFGMM_BroadcastWindow_BroadcastButton" text="Broadcast" inherits="UIPanelButtonTemplate">
 				<Anchors>
@@ -1295,7 +1267,7 @@
 	</Frame>
 	
 	<!-- POPUP WINDOW -->
-	<Frame name="LFGMM_PopupWindow" hidden="true" enableMouse="true" movable="true" frameStrata="HIGH" topLevel="true" parent="UIParent">
+	<Frame name="LFGMM_PopupWindow" inherits="BasicFrameTemplate" hidden="true" enableMouse="true" movable="true" frameStrata="HIGH" topLevel="true" parent="UIParent">
 		<Anchors>
 			<Anchor point="TOP">
 				<Offset y="-25" />
@@ -1305,10 +1277,6 @@
 		<Size x="490" y="145" />
 
 		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture name="$parentBackground" file="Interface\FriendsFrame\UI-Toast-Background" setAllPoints="true" />
-				<Texture name="$parentBorder" file="Interface\DialogFrame\UI-DialogBox-Border" setAllPoints="true" />
-			</Layer>
 			<Layer level="OVERLAY">
 				<Texture name="LFGMM_PopupWindow_Header" file="Interface\DialogFrame\UI-DialogBox-Header">
 					<Anchors>

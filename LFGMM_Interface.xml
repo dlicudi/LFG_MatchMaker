@@ -138,7 +138,7 @@
 		
 		<Layers>
 			<Layer>
-				<FontString text="LFG MatchMaker" inherits="GameFontNormal">
+				<FontString text="LFG MatchMaker Continued" inherits="GameFontNormal">
 					<Anchors>
 						<Anchor point="CENTER" relativePoint="TOP">
 							<Offset x="0" y="-11" />

@@ -34,16 +34,14 @@
 	<!-- LIST ENTRY TEMPLATE -->
 	<Frame name="LFGMM_ListTab_EntryTemplate" virtual="true" inherits="InsetFrameTemplate3">
 		<Size x="360" y="50" />
-
 		<Layers>
 			<Layer>
 				<Texture name="$parentClassIcon" file="Interface\TargetingFrame\UI-Classes-Circles">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativePoint="TOPLEFT" >
+						<Anchor point="TOPLEFT">
 							<Offset x="5" y="-5" />
 						</Anchor>
 					</Anchors>
-
 					<Size x="11" y="11" />
 				</Texture>
 				<FontString name="$parentPlayerName" inherits="GameFontNormal">
@@ -53,7 +51,6 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-
 				<FontString name="$parentMessage" inherits="GameFontHighlightSmall">
 					<Anchors>
 						<Anchor point="BOTTOMLEFT">
@@ -61,17 +58,14 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-				
 				<FontString name="$parentDungeon" inherits="GameFontHighlightSmall">
 					<Anchors>
 						<Anchor point="TOPLEFT">
 							<Offset x="5" y="-20" />
 						</Anchor>
 					</Anchors>
-
 					<Color a="1" r="0" g="1" b="0" />
 				</FontString>
-
 				<FontString name="$parentType" inherits="GameFontHighlightSmall">
 					<Anchors>
 						<Anchor point="RIGHT">
@@ -81,7 +75,6 @@
 				</FontString>
 			</Layer>
 		</Layers>
-		
 		<Frames>
 			<Button name="$parentInfoButton" text="?" inherits="UIPanelButtonTemplate">
 				<Anchors>
@@ -89,9 +82,7 @@
 						<Offset x="-40" />
 					</Anchor>
 				</Anchors>
-
 				<Size x="25" y="25" />
-				
 				<Scripts>
 					<OnClick>
 						LFGMM_ListTab_MessageInfoWindow_Show(self.Message);
@@ -232,7 +223,7 @@
 						</Anchors>
 					</CheckButton>
 					
-					<CheckButton name="LFGMM_LfgTab_MatchLfmCheckBox" disabled="true" inherits="ChatConfigCheckButtonTemplate">
+					<CheckButton name="LFGMM_LfgTab_MatchLfmCheckBox" inherits="ChatConfigCheckButtonTemplate">
 						<Anchors>
 							<Anchor point="CENTER" relativePoint="CENTER">
 								<Offset x="10" y="-35" />
@@ -1119,13 +1110,11 @@
 		
 		<Size x="225" y="75" />
 		
-		<Backdrop bgFile="Interface\FriendsFrame\UI-Toast-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-			<EdgeSize val="28" />
-			<TileSize val="28" />
-			<BackgroundInsets left="5" right="5" top="5" bottom="5" />
-		</Backdrop>
-	
 		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentBackground" file="Interface\FriendsFrame\UI-Toast-Background" setAllPoints="true" />
+				<Texture name="$parentBorder" file="Interface\DialogFrame\UI-DialogBox-Border" setAllPoints="true" />
+			</Layer>
 			<Layer level="OVERLAY">
 				<Texture name="LFGMM_ListTab_ConfirmForgetAll_Header" file="Interface\DialogFrame\UI-DialogBox-Header">
 					<Anchors>
@@ -1264,13 +1253,11 @@
 		
 		<Size x="225" y="75" />
 		
-		<Backdrop bgFile="Interface\FriendsFrame\UI-Toast-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-			<EdgeSize val="28" />
-			<TileSize val="28" />
-			<BackgroundInsets left="5" right="5" top="5" bottom="5" />
-		</Backdrop>
-	
 		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentBackground" file="Interface\FriendsFrame\UI-Toast-Background" setAllPoints="true" />
+				<Texture name="$parentBorder" file="Interface\DialogFrame\UI-DialogBox-Border" setAllPoints="true" />
+			</Layer>
 			<Layer level="OVERLAY">
 				<Texture name="LFGMM_BroadcastWindow_Header" file="Interface\DialogFrame\UI-DialogBox-Header">
 					<Anchors>
@@ -1317,13 +1304,11 @@
 
 		<Size x="490" y="145" />
 
-		<Backdrop bgFile="Interface\FriendsFrame\UI-Toast-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-			<EdgeSize val="28" />
-			<TileSize val="28" />
-			<BackgroundInsets left="5" right="5" top="5" bottom="5" />
-		</Backdrop>
-		
 		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentBackground" file="Interface\FriendsFrame\UI-Toast-Background" setAllPoints="true" />
+				<Texture name="$parentBorder" file="Interface\DialogFrame\UI-DialogBox-Border" setAllPoints="true" />
+			</Layer>
 			<Layer level="OVERLAY">
 				<Texture name="LFGMM_PopupWindow_Header" file="Interface\DialogFrame\UI-DialogBox-Header">
 					<Anchors>
@@ -1416,7 +1401,7 @@
 		</Layers>
 		
 		<Frames>
-			<Button name="LFGMM_PopupWindow_IgnoreButton" visible="false" text="Ignore" inherits="UIPanelButtonTemplate">
+			<Button name="LFGMM_PopupWindow_IgnoreButton" text="Ignore" inherits="UIPanelButtonTemplate">
 				<Anchors>
 					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT">
 						<Offset x="15" y="15" />
@@ -1436,7 +1421,7 @@
 				<Size x="100" y="25" />
 			</Button>
 			
-			<Button name="LFGMM_PopupWindow_WhisperButton" visible="true" text="Whisper" inherits="UIPanelButtonTemplate">
+			<Button name="LFGMM_PopupWindow_WhisperButton" text="Whisper" inherits="UIPanelButtonTemplate">
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT">
 						<Offset x="-135" y="15" />

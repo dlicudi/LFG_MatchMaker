@@ -20,13 +20,22 @@
 # along with 'LFG MatchMaker'. If not, see <https://www.gnu.org/licenses/>.
 #
 
-## Title: LFG Match Maker
-## Interface: 11305
-## Version: 1.0.9
-## Author: L.I.R.
+## Title: LFG MatchMaker Continued
+## Interface: 11501
+## Version: 1.0.0
+## Author: Dubhan Pyrewood EU
+## Notes: A fork of LFG MatchMaker for WoW Classic Era
 ## SavedVariablesPerCharacter: LFGMM_DB
 
+# Libraries
+Libs\LibStub\LibStub.lua
+Libs\CallbackHandler-1.0\CallbackHandler-1.0.lua
+Libs\LibDataBroker-1.1\LibDataBroker-1.1.lua
+Libs\LibDBIcon-1.0\LibDBIcon-1.0.lua
+
+# Core Files
 LFGMM_Interface.xml
+LFGMM_Interface.lua
 LFGMM_Core.lua
 LFGMM_Utility.lua
 LFGMM_MinimapButton.lua

@@ -1010,7 +1010,7 @@
 						<Texture name="LFGMM_ListTab_MessageInfoWindow_ClassIcon" file="Interface\WorldStateFrame\Icons-Classes">
 							<Anchors>
 								<Anchor point="TOPLEFT" relativePoint="TOPLEFT" >
-									<Offset x="15" y="-11" />
+									<Offset x="15" y="-35" />
 								</Anchor>
 							</Anchors>
 
@@ -1020,7 +1020,7 @@
 						<FontString name="LFGMM_ListTab_MessageInfoWindow_ClassText" inherits="GameFontNormal">
 							<Anchors>
 								<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT">
-									<Offset x="-15" y="-24" />
+									<Offset x="-15" y="-48" />
 								</Anchor>
 							</Anchors>
 						</FontString>
@@ -1270,7 +1270,7 @@
 	<Frame name="LFGMM_PopupWindow" inherits="BasicFrameTemplate" hidden="true" enableMouse="true" movable="true" frameStrata="HIGH" topLevel="true" parent="UIParent">
 		<Anchors>
 			<Anchor point="TOP">
-				<Offset y="-25" />
+				<Offset y="0" />
 			</Anchor>
 		</Anchors>
 
@@ -1301,7 +1301,7 @@
 				<Texture name="LFGMM_PopupWindow_ClassIcon" file="Interface\WorldStateFrame\Icons-Classes">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
-							<Offset x="15" y="-15" />
+							<Offset x="15" y="-35" />
 						</Anchor>
 					</Anchors>
 
@@ -1311,7 +1311,7 @@
 				<FontString name="LFGMM_PopupWindow_ClassText" inherits="GameFontNormal">
 					<Anchors>
 						<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT">
-							<Offset x="-15" y="-28" />
+							<Offset x="-15" y="-48" />
 						</Anchor>
 					</Anchors>
 				</FontString>

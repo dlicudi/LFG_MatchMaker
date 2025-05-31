@@ -64,6 +64,8 @@ function LFGMM_Core_Initialize()
 	end
 	
 	LFGMM_GLOBAL.READY = true;
+
+	print("|cff00ff00LFG MatchMaker Continued|r loaded. Type |cffffff00/lfgmm|r for options.")
 end
 
 

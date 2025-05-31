@@ -39,8 +39,8 @@ function LFGMM_MinimapButton_Initialize()
 		{
 			type = "data source",
 			text = "LFG MatchMaker",
-			icon = "Interface\\BUTTONS\\UI-Checkbox-SwordCheck",
-			iconCoords = { -0.12, 0.68, -0.15, 0.65 },
+			icon = "Interface\\Icons\\INV_Misc_GroupLooking",
+			iconCoords = {0, 1, 0, 1},
 			iconR = 1,
 			iconG = 1,
 			iconB = 1,

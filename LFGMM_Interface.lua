@@ -63,7 +63,7 @@ end
 local f = CreateFrame("Frame")
 f:RegisterEvent("ADDON_LOADED")
 f:SetScript("OnEvent", function(self, event, addonName)
-    if addonName == "LFG_MatchMaker" then
+    if addonName == "LFG_MatchMaker_Continued" then
         InitializeFrameProperties()
     end
 end) 

@@ -1,6 +1,6 @@
 --[[
 	LFG MatchMaker - Addon for World of Warcraft.
-	Version: 1.0.9
+	Version: 1.1.0
 	URL: https://github.com/AvilanHauxen/LFG_MatchMaker
 	Copyright (C) 2019-2020 L.I.R.
 
@@ -46,17 +46,17 @@ function LFGMM_Core_Initialize()
 	LFGMM_MainWindow:RegisterForDrag("LeftButton");
 	LFGMM_MainWindow:SetScript("OnDragStart", LFGMM_MainWindow.StartMoving);
 	LFGMM_MainWindow:SetScript("OnDragStop", LFGMM_MainWindow.StopMovingOrSizing);
-	LFGMM_MainWindow:SetScript("OnShow", function() PlaySound(SOUNDKIT.IG_QUEST_LOG_OPEN); LFGMM_Core_Refresh(); end);
-	LFGMM_MainWindow:SetScript("OnHide", function() PlaySound(SOUNDKIT.IG_QUEST_LOG_CLOSE); end);
+	LFGMM_MainWindow:SetScript("OnShow", function() PlaySound(839); LFGMM_Core_Refresh(); end);
+	LFGMM_MainWindow:SetScript("OnHide", function() PlaySound(840); end);
 	
-	LFGMM_MainWindowTab1:SetScript("OnClick", function() PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB); LFGMM_LfgTab_Show(); end);
-	LFGMM_MainWindowTab2:SetScript("OnClick", function() PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB); LFGMM_LfmTab_Show(); end);
-	LFGMM_MainWindowTab3:SetScript("OnClick", function() PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB); LFGMM_ListTab_Show(); end);
-	LFGMM_MainWindowTab4:SetScript("OnClick", function() PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB); LFGMM_SettingsTab_Show(); end);
+	LFGMM_MainWindowTab1:SetScript("OnClick", function() PlaySound(841); LFGMM_LfgTab_Show(); end);
+	LFGMM_MainWindowTab2:SetScript("OnClick", function() PlaySound(841); LFGMM_LfmTab_Show(); end);
+	LFGMM_MainWindowTab3:SetScript("OnClick", function() PlaySound(841); LFGMM_ListTab_Show(); end);
+	LFGMM_MainWindowTab4:SetScript("OnClick", function() PlaySound(841); LFGMM_SettingsTab_Show(); end);
 	
 	PanelTemplates_SetNumTabs(LFGMM_MainWindow, 4);
 	
-	local groupSize = table.getn(LFGMM_GLOBAL.GROUP_MEMBERS);
+	local groupSize = #LFGMM_GLOBAL.GROUP_MEMBERS;
 	if (groupSize > 1) then
 		LFGMM_LfmTab_Show();
 	else
@@ -65,7 +65,7 @@ function LFGMM_Core_Initialize()
 	
 	LFGMM_GLOBAL.READY = true;
 
-	print("|cff00ff00LFG MatchMaker Continued|r loaded. Type |cffffff00/lfgmm|r for options.")
+	print("|cff00ff00LFG MatchMaker Continued|r |cffaaaaaa(v1.1.0)|r by |cffff8040Dubhan-PyrewoodVillage|r loaded. Type |cffffff00/lfgmm|r for options.")
 end
 
 
@@ -252,7 +252,7 @@ function LFGMM_Core_GetGroupMembers()
 	end
 
 	-- Party
-	if (table.getn(groupMembers) == 0) then
+	if (#groupMembers == 0) then
 		local player = UnitName("player");
 		table.insert(groupMembers, player);
 
@@ -453,7 +453,7 @@ function LFGMM_Core_EventHandler(self, event, ...)
 		LFGMM_ListTab_MessageInfoWindow_Refresh();
 		
 		-- Get group size
-		local groupSize = table.getn(LFGMM_GLOBAL.GROUP_MEMBERS);
+		local groupSize = #LFGMM_GLOBAL.GROUP_MEMBERS;
 		
 		-- Abort LFG if group is joined
 		if (LFGMM_DB.SEARCH.LFG.Running and LFGMM_DB.SEARCH.LFG.AutoStop and LFGMM_GLOBAL.AUTOSTOP_AVAILABLE) then
@@ -715,7 +715,7 @@ function LFGMM_Core_EventHandler(self, event, ...)
 			if (typeMatch == nil) then
 				typeMatch = "UNKNOWN";
 
-				if (table.getn(dungeonMatches) > 0) then
+				if (#dungeonMatches > 0) then
 					if (string.find(message, "wts.-boost") ~= nil) then
 						typeMatch = "LFM";
 					elseif (string.find(message, "wtb.-boost") ~= nil) then
@@ -726,7 +726,7 @@ function LFGMM_Core_EventHandler(self, event, ...)
 				end
 			end
 
-			if (typeMatch == "UNKNOWN" and table.getn(dungeonMatches) == 0) then
+			if (typeMatch == "UNKNOWN" and #dungeonMatches == 0) then
 				-- Ignore general and trade messages without dungeon and type match
 				if (isGeneralChannel or isTradeChannel) then
 					return;
@@ -740,7 +740,7 @@ function LFGMM_Core_EventHandler(self, event, ...)
 
 			-- Find sort index
 			local messageSortIndex;
-			if (table.getn(dungeonMatches) == 0) then
+			if (#dungeonMatches == 0) then
 				messageSortIndex = -1;
 				
 			elseif (isAnyDungeonMatch) then
@@ -751,7 +751,7 @@ function LFGMM_Core_EventHandler(self, event, ...)
 				messageSortIndex = dungeonMatches[1].Index;
 				
 				-- Sort by first subdungeon (if present) if first dungeon is a parent
-				if (dungeonMatches[1].SubDungeons ~= nil and table.getn(dungeonMatches) > 1) then
+				if (dungeonMatches[1].SubDungeons ~= nil and #dungeonMatches > 1) then
 					if (LFGMM_Utility_ArrayContains(dungeonMatches[1].SubDungeons, dungeonMatches[2].Index)) then
 						messageSortIndex = dungeonMatches[2].Index;
 					end
@@ -789,7 +789,7 @@ function LFGMM_Core_EventHandler(self, event, ...)
 				local savedMessage = LFGMM_GLOBAL.MESSAGES[player];
 				
 				-- Ignore message if previous message from player matched dungeons and the new message dont match any
-				if (table.getn(savedMessage.Dungeons) > 0 and table.getn(dungeonMatches) == 0) then
+				if (#savedMessage.Dungeons > 0 and #dungeonMatches == 0) then
 					return;
 				end
 				

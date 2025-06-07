@@ -1,6 +1,6 @@
 --[[
 	LFG MatchMaker - Addon for World of Warcraft.
-	Version: 1.0.9
+	Version: 1.1.0
 	URL: https://github.com/AvilanHauxen/LFG_MatchMaker
 	Copyright (C) 2019-2020 L.I.R.
 
@@ -97,7 +97,7 @@ function LFGMM_ListTab_Refresh()
 		elseif (message.Timestamp < maxMessageAge) then
 			skip = true;
 
-		elseif (table.getn(message.Dungeons) == 0 and LFGMM_DB.LIST.ShowUnknownDungeons) then
+		elseif (#message.Dungeons == 0 and LFGMM_DB.LIST.ShowUnknownDungeons) then
 			skip = false;
 
 		else
@@ -138,7 +138,7 @@ function LFGMM_ListTab_Refresh()
 	table.sort(filteredMessages, function(left, right) return left.SortIndex < right.SortIndex;	end);
 
 	-- Get number of messages
-	local numMessages = table.getn(filteredMessages);
+	local numMessages = #filteredMessages;
 
 	-- Set start entry index and show/hide scrollbar
 	local startEntryIndex = 1;
@@ -189,7 +189,7 @@ function LFGMM_ListTab_Refresh()
 		
 			-- Dungeons
 			local dungeonsLabel = getglobal("LFGMM_ListTab_Entry" .. entryIndex .. "Dungeon");
-			if (table.getn(message.Dungeons) == 0) then
+			if (#message.Dungeons == 0) then
 				dungeonsLabel:SetText("?");
 				dungeonsLabel:SetTextColor(1, 0, 0);
 			else
@@ -338,8 +338,8 @@ function LFGMM_ListTab_DungeonsDropDown_OnInitialize(self, level)
 		unknownItem.arg1 = { Index = 0 };
 		UIDropDownMenu_AddButton(unknownItem, 1);
 
-		if (table.getn(dungeonsList) > 0) then
-			if (table.getn(raidsList) > 0 or table.getn(pvpList) > 0) then
+		if (#dungeonsList > 0) then
+			if (#raidsList > 0 or #pvpList > 0) then
 				-- Dungeons header
 				local dungeonsHeader = UIDropDownMenu_CreateInfo();
 				dungeonsHeader.text = "Dungeon";
@@ -360,8 +360,8 @@ function LFGMM_ListTab_DungeonsDropDown_OnInitialize(self, level)
 			end
 		end
 
-		if (table.getn(raidsList) > 0) then
-			if (table.getn(dungeonsList) > 0 or table.getn(pvpList) > 0) then
+		if (#raidsList > 0) then
+			if (#dungeonsList > 0 or #pvpList > 0) then
 				-- Raids header
 				local raidsHeader = UIDropDownMenu_CreateInfo();
 				raidsHeader.text = "Raid";
@@ -380,8 +380,8 @@ function LFGMM_ListTab_DungeonsDropDown_OnInitialize(self, level)
 			end
 		end
 		
-		if (table.getn(pvpList) > 0) then
-			if (table.getn(dungeonsList) > 0 or table.getn(raidsList) > 0) then
+		if (#pvpList > 0) then
+			if (#dungeonsList > 0 or #raidsList > 0) then
 				-- PvP header
 				local pvpHeader = UIDropDownMenu_CreateInfo();
 				pvpHeader.text = "PvP";
@@ -455,8 +455,8 @@ end
 
 
 function LFGMM_ListTab_DungeonsDropDown_UpdateText()
-	local numDungeons = table.getn(LFGMM_Utility_GetAllAvailableDungeonsAndRaids());
-	local numSelectedDungeons = table.getn(LFGMM_DB.LIST.Dungeons);
+	local numDungeons = #LFGMM_Utility_GetAllAvailableDungeonsAndRaids();
+	local numSelectedDungeons = #LFGMM_DB.LIST.Dungeons;
 	
 	local text = "";
 	if (numSelectedDungeons > 0 and numSelectedDungeons >= numDungeons) then
@@ -755,7 +755,7 @@ function LFGMM_ListTab_MessageInfoWindow_Refresh()
 		end
 
 		-- Request invite button
-		if (table.getn(LFGMM_GLOBAL.GROUP_MEMBERS) > 1) then
+		if (#LFGMM_GLOBAL.GROUP_MEMBERS > 1) then
 			LFGMM_ListTab_MessageInfoWindow_RequestInviteButton:Hide();
 		elseif (message.InviteRequested) then
 			LFGMM_ListTab_MessageInfoWindow_RequestInviteButton:SetText("Invite requested");

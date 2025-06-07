@@ -1,6 +1,6 @@
 --[[
 	LFG MatchMaker - Addon for World of Warcraft.
-	Version: 1.0.9
+	Version: 1.1.0
 	URL: https://github.com/AvilanHauxen/LFG_MatchMaker
 	Copyright (C) 2019-2020 L.I.R.
 
@@ -44,9 +44,9 @@ function LFGMM_Utility_InitializeCheckbox(checkBox, text, tooltip, initialValue,
 	checkBox:SetScript("OnClick", 
 		function()
 			if (checkBox:GetChecked()) then
-				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
+				PlaySound(857);
 			else
-				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+				PlaySound(856);
 			end
 			onClick();
 		end
@@ -149,7 +149,7 @@ end
 
 
 function LFGMM_Utility_ArrayClear(array)
-	for index = 1, table.getn(array) do
+	for index = 1, #array do
 		table.remove(array, 1);
 	end
 end
@@ -359,11 +359,11 @@ function LFGMM_Utility_GetDungeonMessageText(dungeons, separator, lastSeparator)
 		end
 	end
 
-	local smDungeonsCount = table.getn(smDungeons);
-	local maraDungeonsCount = table.getn(maraDungeons);
-	local brdDungeonsCount = table.getn(brdDungeons);
-	local stratDungeonsCount = table.getn(stratDungeons);
-	local dmDungeonsCount = table.getn(dmDungeons);
+	local smDungeonsCount = #smDungeons;
+	local maraDungeonsCount = #maraDungeons;
+	local brdDungeonsCount = #brdDungeons;
+	local stratDungeonsCount = #stratDungeons;
+	local dmDungeonsCount = #dmDungeons;
 
 	local addNames = function(dungeonList, names, abbreviations)
 		for _,dungeon in ipairs(dungeonList) do
@@ -513,7 +513,7 @@ function LFGMM_Utility_GetDungeonMessageText(dungeons, separator, lastSeparator)
 	for index,dungeonName in ipairs(dungeonNames) do
 		if (index == 1) then
 			allNames = dungeonName;
-		elseif (index == table.getn(dungeonNames)) then
+		elseif (index == #dungeonNames) then
 			allNames = allNames .. lastSeparator .. dungeonName;
 		else
 			allNames = allNames .. separator .. dungeonName;
@@ -525,7 +525,7 @@ function LFGMM_Utility_GetDungeonMessageText(dungeons, separator, lastSeparator)
 	for index,dungeonAbbreviation in ipairs(dungeonAbbreviations) do
 		if (index == 1) then
 			allAbbreviations = dungeonAbbreviation;
-		elseif (index == table.getn(dungeonAbbreviations)) then
+		elseif (index == #dungeonAbbreviations) then
 			allAbbreviations = allAbbreviations .. lastSeparator .. dungeonAbbreviation;
 		else
 			allAbbreviations = allAbbreviations .. separator .. dungeonAbbreviation;

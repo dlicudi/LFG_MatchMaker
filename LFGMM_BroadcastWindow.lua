@@ -1,6 +1,6 @@
 --[[
 	LFG MatchMaker - Addon for World of Warcraft.
-	Version: 1.0.9
+	Version: 1.1.0
 	URL: https://github.com/AvilanHauxen/LFG_MatchMaker
 	Copyright (C) 2019-2020 L.I.R.
 
@@ -30,7 +30,7 @@ function LFGMM_BroadcastWindow_Initialize()
 	LFGMM_BroadcastWindow:RegisterForDrag("LeftButton");
 	LFGMM_BroadcastWindow:SetScript("OnDragStart", LFGMM_BroadcastWindow.StartMoving);
 	LFGMM_BroadcastWindow:SetScript("OnDragStop", LFGMM_BroadcastWindow.StopMovingOrSizing);
-	LFGMM_BroadcastWindow:SetScript("OnShow", function() PlaySound(SOUNDKIT.GS_LOGIN); end);
+	LFGMM_BroadcastWindow:SetScript("OnShow", function() PlaySound(838); end);
 	
 	LFGMM_BroadcastWindow_BroadcastButton:SetScript("OnClick", LFGMM_BroadcastWindow_BroadcastButton_OnClick);
 end

@@ -1,6 +1,6 @@
 --[[
 	LFG MatchMaker - Addon for World of Warcraft.
-	Version: 1.0.9
+	Version: 1.1.0
 	URL: https://github.com/AvilanHauxen/LFG_MatchMaker
 	Copyright (C) 2019-2020 L.I.R.
 
@@ -71,7 +71,7 @@ function LFGMM_LfmTab_Show()
 	LFGMM_MainWindowTab3:SetPoint ("CENTER", "LFGMM_MainWindow", "BOTTOMRIGHT", -140, -14);
 	LFGMM_MainWindowTab4:SetPoint ("CENTER", "LFGMM_MainWindow", "BOTTOMRIGHT",  -60, -14);
 	
-	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
+	PlaySound(841);
 
 	LFGMM_LfmTab_Refresh();
 end
@@ -95,7 +95,7 @@ function LFGMM_LfmTab_Refresh()
 		LFGMM_LfmTab_BroadcastMessageInfoWindow:Hide();
 	end
 	
-	local groupSize = table.getn(LFGMM_GLOBAL.GROUP_MEMBERS);
+	local groupSize = #LFGMM_GLOBAL.GROUP_MEMBERS;
 	local dungeonSize = (LFGMM_DB.SEARCH.LFM.Dungeon ~= nil and LFGMM_GLOBAL.DUNGEONS[LFGMM_DB.SEARCH.LFM.Dungeon].Size) or nil;
 	if (dungeonSize and groupSize >= dungeonSize) then
 		LFGMM_LfmTab_AutoStopCheckBox:SetChecked(false);
@@ -189,11 +189,11 @@ function LFGMM_LfmTab_DungeonDropDown_OnInitialize(self, level)
 		-- Get dungeons and raids to list
 		local dungeonsList, raidsList, pvpList = LFGMM_Utility_GetAvailableDungeonsAndRaidsSorted();
 
-		if (table.getn(dungeonsList) > 0 or table.getn(raidsList) > 0) then
+		if (#dungeonsList > 0 or #raidsList > 0) then
 			local buttonIndex = 1;
 			
-			if (table.getn(dungeonsList) > 0) then
-				if (table.getn(raidsList) > 0 or table.getn(pvpList) > 0) then
+			if (#dungeonsList > 0) then
+				if (#raidsList > 0 or #pvpList > 0) then
 					-- Dungeons header
 					local dungeonsHeader = UIDropDownMenu_CreateInfo();
 					dungeonsHeader.text = "Dungeon";
@@ -216,8 +216,8 @@ function LFGMM_LfmTab_DungeonDropDown_OnInitialize(self, level)
 				end
 			end
 				
-			if (table.getn(raidsList) > 0) then
-				if (table.getn(dungeonsList) > 0 or table.getn(pvpList) > 0) then
+			if (#raidsList > 0) then
+				if (#dungeonsList > 0 or #pvpList > 0) then
 					-- Raids header
 					local raidsHeader = UIDropDownMenu_CreateInfo();
 					raidsHeader.text = "Raid";
@@ -238,8 +238,8 @@ function LFGMM_LfmTab_DungeonDropDown_OnInitialize(self, level)
 				end
 			end
 			
-			if (table.getn(pvpList) > 0) then
-				if (table.getn(dungeonsList) > 0 or table.getn(raidsList) > 0) then
+			if (#pvpList > 0) then
+				if (#dungeonsList > 0 or #raidsList > 0) then
 					-- PvP header
 					local pvpHeader = UIDropDownMenu_CreateInfo();
 					pvpHeader.text = "PvP";
@@ -312,7 +312,7 @@ end
 
 
 function LFGMM_LfmTab_StartStopSearchButton_OnClick()
-	PlaySound(SOUNDKIT.GS_LOGIN);
+	PlaySound(838);
 
 	-- Close drop down
 	CloseDropDownMenus();
@@ -326,7 +326,7 @@ function LFGMM_LfmTab_StartStopSearchButton_OnClick()
 
 	else
 		-- Determine if autostop is available or not
-		local groupSize = table.getn(LFGMM_GLOBAL.GROUP_MEMBERS);
+		local groupSize = #LFGMM_GLOBAL.GROUP_MEMBERS;
 		local dungeonSize = LFGMM_GLOBAL.DUNGEONS[LFGMM_DB.SEARCH.LFM.Dungeon].Size;
 		if (groupSize >= dungeonSize) then
 			LFGMM_GLOBAL.AUTOSTOP_AVAILABLE = false;
@@ -403,7 +403,7 @@ function LFGMM_LfmTab_UpdateBroadcastMessage()
 		abbreviationText = dungeon.Abbreviation;
 
 		-- Get number of players
-		local lookingForNumber = dungeon.Size - table.getn(LFGMM_GLOBAL.GROUP_MEMBERS);
+		local lookingForNumber = dungeon.Size - #LFGMM_GLOBAL.GROUP_MEMBERS;
 		if (lookingForNumber < 0) then
 			lookingForNumber = 0;
 		end

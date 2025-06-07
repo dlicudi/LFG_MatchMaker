@@ -1,6 +1,6 @@
 --[[
 	LFG MatchMaker - Addon for World of Warcraft.
-	Version: 1.0.9
+	Version: 1.1.0
 	URL: https://github.com/AvilanHauxen/LFG_MatchMaker
 	Copyright (C) 2019-2020 L.I.R.
 
@@ -30,7 +30,7 @@ function LFGMM_PopupWindow_Initialize()
 	LFGMM_PopupWindow:RegisterForDrag("LeftButton");
 	LFGMM_PopupWindow:SetScript("OnDragStart", LFGMM_PopupWindow.StartMoving);
 	LFGMM_PopupWindow:SetScript("OnDragStop", LFGMM_PopupWindow.StopMovingOrSizing);
-	LFGMM_PopupWindow:SetScript("OnShow", function() PlaySound(SOUNDKIT.IG_PLAYER_INVITE); end);
+	LFGMM_PopupWindow:SetScript("OnShow", function() PlaySound(880); end);
 
 	LFGMM_PopupWindow_WhisperButton:SetScript("OnClick", LFGMM_PopupWindow_WhisperButton_OnClick);
 	LFGMM_PopupWindow_IgnoreButton:SetScript("OnClick", LFGMM_PopupWindow_IgnoreButton_OnClick);
@@ -318,7 +318,7 @@ function LFGMM_PopupWindow_UpdateWaitCountdown()
 		
 	else
 		-- Hide if group has been joined
-		if (table.getn(LFGMM_GLOBAL.GROUP_MEMBERS) > 1) then
+		if (#LFGMM_GLOBAL.GROUP_MEMBERS > 1) then
 			LFGMM_PopupWindow.UpdateWaitCountdownLock = false;
 			LFGMM_PopupWindow_Hide();
 

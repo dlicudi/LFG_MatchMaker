@@ -1,6 +1,6 @@
 --[[
 	LFG MatchMaker - Addon for World of Warcraft.
-	Version: 1.1.0
+	Version: 1.1.4
 	URL: https://github.com/AvilanHauxen/LFG_MatchMaker
 	Copyright (C) 2019-2020 L.I.R.
 
@@ -25,9 +25,232 @@
 -- CORE
 ------------------------------------------------------------------------------------------------------------------------
 
+-- Performance optimization: Pre-compiled pattern caches
+local LFGMM_Core_AccentReplacementMap = {
+	["á"] = "a", ["à"] = "a", ["ä"] = "a", ["â"] = "a", ["ã"] = "a",
+	["é"] = "e", ["è"] = "e", ["ë"] = "e", ["ê"] = "e",
+	["í"] = "i", ["ì"] = "i", ["ï"] = "i", ["î"] = "i",
+	["ñ"] = "n",
+	["ó"] = "o", ["ò"] = "o", ["ö"] = "o", ["ô"] = "o", ["õ"] = "o",
+	["ú"] = "u", ["ù"] = "u", ["ü"] = "u", ["û"] = "u",
+	["ß"] = "ss", ["œ"] = "oe", ["ç"] = "c"
+}
+
+-- Optimized accent removal function
+local function LFGMM_Core_RemoveAccents(text)
+	return text:gsub("[áàäâãéèëêíìïîñóòöôõúùüûßœç]", LFGMM_Core_AccentReplacementMap)
+end
+
+-- Dungeon pattern cache - will be populated at startup
+local LFGMM_Core_DungeonPatternCache = {}
+local LFGMM_Core_DungeonLookupCache = {}
+local LFGMM_Core_FallbackPatternCache = {}
+
+-- Function to compile dungeon patterns for better performance
+local function LFGMM_Core_CompileDungeonPatterns()
+	LFGMM_Core_DungeonPatternCache = {}
+	LFGMM_Core_DungeonLookupCache = {}
+	LFGMM_Core_FallbackPatternCache = {}
+	
+	-- Get enabled languages from settings, fallback to English if not initialized
+	local enabledLanguages = LFGMM_DB and LFGMM_DB.SETTINGS and LFGMM_DB.SETTINGS.IdentifierLanguages or {"EN"}
+	
+	-- Compile main dungeon patterns
+	for _, dungeon in ipairs(LFGMM_GLOBAL.DUNGEONS) do
+		local patterns = {}
+		local notPatterns = {}
+		
+		for _, languageCode in ipairs(enabledLanguages) do
+			if dungeon.Identifiers[languageCode] then
+				for _, identifier in ipairs(dungeon.Identifiers[languageCode]) do
+					table.insert(patterns, {
+						start = "^" .. identifier .. "[%W]+",
+						exact = "^" .. identifier .. "$",
+						middle = "[%W]+" .. identifier .. "[%W]+",
+						end_ = "[%W]+" .. identifier .. "$"
+					})
+				end
+			end
+			
+			if dungeon.NotIdentifiers and dungeon.NotIdentifiers[languageCode] then
+				for _, notIdentifier in ipairs(dungeon.NotIdentifiers[languageCode]) do
+					table.insert(notPatterns, {
+						start = "^" .. notIdentifier .. "[%W]+",
+						exact = "^" .. notIdentifier .. "$",
+						middle = "[%W]+" .. notIdentifier .. "[%W]+",
+						end_ = "[%W]+" .. notIdentifier .. "$"
+					})
+				end
+			end
+		end
+		
+		LFGMM_Core_DungeonPatternCache[dungeon.Index] = {
+			patterns = patterns,
+			notPatterns = notPatterns,
+			dungeon = dungeon
+		}
+	end
+	
+	-- Compile fallback patterns
+	for _, dungeonsFallback in ipairs(LFGMM_GLOBAL.DUNGEONS_FALLBACK) do
+		local patterns = {}
+		
+		for _, languageCode in ipairs(enabledLanguages) do
+			if dungeonsFallback.Identifiers[languageCode] then
+				for _, identifier in ipairs(dungeonsFallback.Identifiers[languageCode]) do
+					table.insert(patterns, {
+						start = "^" .. identifier .. "[%W]+",
+						exact = "^" .. identifier .. "$",
+						middle = "[%W]+" .. identifier .. "[%W]+",
+						end_ = "[%W]+" .. identifier .. "$"
+					})
+				end
+			end
+		end
+		
+		table.insert(LFGMM_Core_FallbackPatternCache, {
+			patterns = patterns,
+			dungeonsFallback = dungeonsFallback
+		})
+	end
+end
+
+-- Optimized dungeon matching function
+local function LFGMM_Core_FindDungeonMatches(message, enabledLanguages)
+	local uniqueDungeonMatches = LFGMM_Utility_CreateUniqueDungeonsList()
+	
+	-- Check main dungeons
+	for dungeonIndex, cache in pairs(LFGMM_Core_DungeonPatternCache) do
+		local matched = false
+		
+		-- Check positive patterns
+		for _, pattern in ipairs(cache.patterns) do
+			if string.find(message, pattern.start) or
+			   string.find(message, pattern.exact) or
+			   string.find(message, pattern.middle) or
+			   string.find(message, pattern.end_) then
+				matched = true
+				break
+			end
+		end
+		
+		-- Check negative patterns (NotIdentifiers)
+		if matched and #cache.notPatterns > 0 then
+			for _, notPattern in ipairs(cache.notPatterns) do
+				if string.find(message, notPattern.start) or
+				   string.find(message, notPattern.exact) or
+				   string.find(message, notPattern.middle) or
+				   string.find(message, notPattern.end_) then
+					matched = false
+					break
+				end
+			end
+		end
+		
+		if matched then
+			uniqueDungeonMatches:Add(cache.dungeon)
+			
+			if cache.dungeon.ParentDungeon then
+				uniqueDungeonMatches:Add(LFGMM_GLOBAL.DUNGEONS[cache.dungeon.ParentDungeon])
+			end
+		end
+	end
+	
+	-- Check fallback patterns
+	for _, fallbackCache in ipairs(LFGMM_Core_FallbackPatternCache) do
+		local matched = false
+		
+		for _, pattern in ipairs(fallbackCache.patterns) do
+			if string.find(message, pattern.start) or
+			   string.find(message, pattern.exact) or
+			   string.find(message, pattern.middle) or
+			   string.find(message, pattern.end_) then
+				matched = true
+				break
+			end
+		end
+		
+		if matched then
+			local singleInFallbackMatched = false
+			
+			for _, dungeonIndex in ipairs(fallbackCache.dungeonsFallback.Dungeons) do
+				if uniqueDungeonMatches.List[dungeonIndex] then
+					singleInFallbackMatched = true
+					break
+				end
+			end
+			
+			if not singleInFallbackMatched then
+				for _, dungeonIndex in ipairs(fallbackCache.dungeonsFallback.Dungeons) do
+					local dungeon = LFGMM_GLOBAL.DUNGEONS[dungeonIndex]
+					uniqueDungeonMatches:Add(dungeon)
+					
+					if dungeon.ParentDungeon then
+						uniqueDungeonMatches:Add(LFGMM_GLOBAL.DUNGEONS[dungeon.ParentDungeon])
+					end
+				end
+			end
+		end
+	end
+	
+	return uniqueDungeonMatches
+end
+
+-- Public function to recompile patterns when settings change
+function LFGMM_Core_RecompileDungeonPatterns()
+	LFGMM_Core_CompileDungeonPatterns()
+end
+
+
+-- Safe function to get player class with fallback
+function LFGMM_Core_GetSafePlayerClass()
+	return LFGMM_GLOBAL.PLAYER_CLASS or LFGMM_GLOBAL.CLASSES["WARRIOR"]
+end
+
+-- Function to determine message type (LFG/LFM/UNKNOWN)
+local function LFGMM_Core_GetPlayerSearchType(message, isGeneralOrTrade)
+	local typeMatch = nil
+	
+	-- Search for type identifiers in enabled languages
+	for _, languageCode in ipairs(LFGMM_DB.SETTINGS.IdentifierLanguages) do
+		if LFGMM_GLOBAL.MESSAGETYPE_IDENTIFIERS[languageCode] then
+			for _, identifierCollection in ipairs(LFGMM_GLOBAL.MESSAGETYPE_IDENTIFIERS[languageCode]) do
+				for _, identifier in ipairs(identifierCollection.Identifiers) do
+					if string.find(message, identifier) then
+						typeMatch = identifierCollection.Type
+						break
+					end
+				end
+				if typeMatch then break end
+			end
+		end
+		if typeMatch then break end
+	end
+	
+	-- If no direct match found, try to infer from context
+	if not typeMatch then
+		typeMatch = "UNKNOWN"
+		
+		-- Check for boost-related patterns
+		if string.find(message, "wts.-boost") then
+			typeMatch = "LFM"
+		elseif string.find(message, "wtb.-boost") then
+			typeMatch = "LFG"
+		elseif string.find(message, "heal[i]?[n]?[g]?[%W]*service[s]?") or 
+			   string.find(message, "tank[i]?[n]?[g]?[%W]*service[s]?") then
+			typeMatch = "LFG"
+		end
+	end
+	
+	return typeMatch
+end
+
 
 function LFGMM_Core_Initialize()
 	tinsert(UISpecialFrames, "LFGMM_MainWindow");
+	
+	-- Compile dungeon patterns for performance optimization
+	LFGMM_Core_CompileDungeonPatterns();
 	
 	LFGMM_LfgTab_Initialize();
 	LFGMM_LfmTab_Initialize();
@@ -65,7 +288,7 @@ function LFGMM_Core_Initialize()
 	
 	LFGMM_GLOBAL.READY = true;
 
-	print("|cff00ff00LFG MatchMaker Continued|r |cffaaaaaa(v1.1.0)|r by |cffff8040Dubhan-PyrewoodVillage|r loaded. Type |cffffff00/lfgmm|r for options.")
+	print("|cff00ff00LFG MatchMaker Continued|r |cffaaaaaa(v1.1.4)|r by |cffff8040Dubhan-PyrewoodVillage|r loaded. Type |cffffff00/lfgmm|r for options.")
 end
 
 
@@ -345,8 +568,8 @@ function LFGMM_Core_FindSearchMatch()
 		-- Find dungeon match
 		if (not skip) then
 			for _,searchDungeonIndex in ipairs(searchDungeonIndexes) do
-				for _,dungeon in ipairs(message.Dungeons) do
-					if (dungeon.Index == searchDungeonIndex) then
+				for _,dungeonIndex in ipairs(message.Dungeons) do
+					if (dungeonIndex == searchDungeonIndex) then
 						LFGMM_PopupWindow_ShowForMatch(message);
 						return;
 					end
@@ -384,461 +607,256 @@ end
 -- EVENT HANDLER
 ------------------------------------------------------------------------------------------------------------------------
 
+-- Modular event handlers for better maintainability
 
+-- Handle player entering world event
+local function LFGMM_Core_HandlePlayerEnteringWorld()
+	-- Get player info
+	LFGMM_GLOBAL.PLAYER_NAME = UnitName("player")
+	LFGMM_GLOBAL.PLAYER_LEVEL = UnitLevel("player")
+	local localizedClass, englishClass = UnitClass("player")
+	LFGMM_GLOBAL.PLAYER_CLASS = LFGMM_GLOBAL.CLASSES[englishClass]
+
+	-- Get group members
+	LFGMM_Core_GetGroupMembers()
+
+	-- Load
+	LFGMM_Load()
+	LFGMM_Core_Initialize()
+
+	-- Join channels
+	C_Timer.After(5, function()
+		LFGMM_Core_JoinChannels()
+	end)
+end
+
+-- Handle zone change event
+local function LFGMM_Core_HandleZoneChanged()
+	C_Timer.After(5, function()
+		LFGMM_Core_JoinChannels()
+	end)
+end
+
+-- Handle player level up event
+local function LFGMM_Core_HandlePlayerLevelUp(newLevel)
+	LFGMM_GLOBAL.PLAYER_LEVEL = newLevel
+	LFGMM_Core_GetGroupMembers()
+	LFGMM_Core_Refresh()
+end
+
+-- Handle party invite request event
+local function LFGMM_Core_HandlePartyInviteRequest(player)
+	if LFGMM_DB.SETTINGS.ShowInvitePopup then
+		LFGMM_PopupWindow_ShowInviteReceived(player)
+	end
+end
+
+-- Handle chat system messages
+local function LFGMM_Core_HandleChatSystemMessage(message)
+	-- Check for player level in /who response
+	local match = string.match(message, "^|Hplayer:([^|]+)|h%[([^%]]+)%]|h.+Level (%d+).+")
+	if match then
+		local playerName = match
+		local playerLevel = tonumber(select(3, string.match(message, "^|Hplayer:([^|]+)|h%[([^%]]+)%]|h.+Level (%d+).+")))
+		
+		if LFGMM_GLOBAL.MESSAGES[playerName] then
+			LFGMM_GLOBAL.MESSAGES[playerName].PlayerLevel = playerLevel
+			LFGMM_ListTab_Refresh()
+			LFGMM_ListTab_MessageInfoWindow_Refresh()
+			LFGMM_PopupWindow_Refresh()
+		end
+	end
+end
+
+-- Handle group roster updates
+local function LFGMM_Core_HandleGroupRosterUpdate()
+	LFGMM_Core_GetGroupMembers()
+	
+	-- Stop LFG search when group is formed
+	if LFGMM_DB.SEARCH.LFG.Running and #LFGMM_GLOBAL.GROUP_MEMBERS > 1 then
+		LFGMM_DB.SEARCH.LFG.Running = false
+		LFGMM_Core_Refresh()
+	end
+	
+	-- Stop LFM search when group reaches dungeon capacity
+	if LFGMM_DB.SEARCH.LFM.Running and LFGMM_DB.SEARCH.LFM.Dungeon then
+		local dungeon = LFGMM_GLOBAL.DUNGEONS[LFGMM_DB.SEARCH.LFM.Dungeon]
+		local maxGroupSize = 5 -- Default for most dungeons
+		
+		if dungeon and dungeon.MaxGroupSize then
+			maxGroupSize = dungeon.MaxGroupSize
+		end
+		
+		if #LFGMM_GLOBAL.GROUP_MEMBERS >= maxGroupSize then
+			LFGMM_DB.SEARCH.LFM.Running = false
+			LFGMM_Core_Refresh()
+		end
+	end
+	
+	LFGMM_LfgTab_Refresh()
+	LFGMM_LfmTab_Refresh()
+	LFGMM_PopupWindow_Refresh()
+end
+
+-- Handle chat channel messages (LFG parsing)
+local function LFGMM_Core_HandleChatChannelMessage(message, player, playerGuid, channelName)
+	local isGeneralChannel = string.find(channelName, "^" .. LFGMM_GLOBAL.GENERAL_CHANNEL_NAME)
+	local isTradeChannel = string.find(channelName, "^" .. LFGMM_GLOBAL.TRADE_CHANNEL_NAME)
+
+	if channelName == LFGMM_GLOBAL.LFG_CHANNEL_NAME or
+		(isGeneralChannel and LFGMM_DB.SETTINGS.UseGeneralChannel) or
+		(isTradeChannel and LFGMM_DB.SETTINGS.UseTradeChannel) then
+		
+		local now = time()
+		local messageOrg = message
+		message = string.lower(message)
+
+		-- Ignore own messages
+		if player == LFGMM_GLOBAL.PLAYER_NAME then
+			return
+		end
+		
+		-- Replace special characters in message (optimized)
+		message = LFGMM_Core_RemoveAccents(message)
+
+		-- Remove item links to prevent false positive matches from item names
+		message = string.gsub(message, "%phitem[%d:]+%ph%[.-%]", "")
+
+		-- Remove "/w me" and "/w inv" from message before parsing
+		for _, languageCode in ipairs(LFGMM_DB.SETTINGS.IdentifierLanguages) do
+			if languageCode == "EN" then
+				message = string.gsub(message, "/w[%W]+me", " ")
+				message = string.gsub(message, "/w[%W]+inv", " ")
+			elseif languageCode == "DE" then
+				message = string.gsub(message, "/w[%W]+mir", " ")
+				message = string.gsub(message, "/w[%W]+bei", " ")
+			elseif languageCode == "FR" then
+				message = string.gsub(message, "/w[%W]+moi", " ")
+				message = string.gsub(message, "/w[%W]+pour", " ")
+				message = string.gsub(message, "[%W]+w/moi", " ")
+				message = string.gsub(message, "[%W]+w/pour", " ")
+			elseif languageCode == "ES" then
+				message = string.gsub(message, "/w[%W]+yo", " ")
+			end
+		end
+
+		-- Use optimized dungeon matching function
+		local uniqueDungeonMatches = LFGMM_Core_FindDungeonMatches(message, LFGMM_DB.SETTINGS.IdentifierLanguages)
+
+		-- Handle DM ambiguity (Deadmines vs Dire Maul)
+		if uniqueDungeonMatches.List[3] and uniqueDungeonMatches.List[39] and
+			not uniqueDungeonMatches.List[40] and not uniqueDungeonMatches.List[41] and
+			not uniqueDungeonMatches.List[42] and not uniqueDungeonMatches.List[43] then
+			
+			for _, dungeon in ipairs(uniqueDungeonMatches:GetDungeonList()) do
+				if dungeon.Index ~= 3 and dungeon.MinLevel <= 30 then
+					uniqueDungeonMatches:Remove(LFGMM_GLOBAL.DUNGEONS[39])
+					break
+				end
+				if dungeon.Index ~= 39 and dungeon.MinLevel >= 50 then
+					uniqueDungeonMatches:Remove(LFGMM_GLOBAL.DUNGEONS[3])
+					break
+				end
+			end
+		end
+		
+		-- Check for "Any dungeon" match
+		local isAnyDungeonMatch = LFGMM_Utility_ArrayContainsAll(uniqueDungeonMatches:GetIndexList(), LFGMM_GLOBAL.DUNGEONS_FALLBACK[4].Dungeons)
+		
+		-- Determine message type (LFG/LFM)
+		local typeMatch = LFGMM_Core_GetPlayerSearchType(message, isGeneralChannel or isTradeChannel)
+		local dungeonMatches = uniqueDungeonMatches:GetIndexList()
+		
+		-- Only process messages with clear type/dungeon match for General/Trade channels
+		if (isGeneralChannel or isTradeChannel) and (typeMatch == "UNKNOWN" or #dungeonMatches == 0) then
+			return
+		end
+		
+		-- Handle message storage and updates
+		local savedMessage = LFGMM_GLOBAL.MESSAGES[player]
+		local messageSortIndex = LFGMM_GLOBAL.MESSAGE_SORT_INDEX
+		LFGMM_GLOBAL.MESSAGE_SORT_INDEX = LFGMM_GLOBAL.MESSAGE_SORT_INDEX + 1
+		
+		if savedMessage then
+			-- Only update if new message has dungeon matches or saved message doesn't
+			if #dungeonMatches > 0 or #savedMessage.Dungeons == 0 then
+				savedMessage.Timestamp = now
+				savedMessage.Type = typeMatch
+				savedMessage.Message = messageOrg
+				savedMessage.Dungeons = dungeonMatches
+				savedMessage.SortIndex = messageSortIndex
+			end
+		else
+			-- Add new message
+			local localizedClass, classFile = GetPlayerInfoByGUID(playerGuid)
+			local newMessage = {
+				Player = player,
+				PlayerClass = LFGMM_GLOBAL.CLASSES[classFile],
+				PlayerLevel = nil,
+				Timestamp = now,
+				Type = typeMatch,
+				Message = messageOrg,
+				Dungeons = dungeonMatches,
+				Ignore = {},
+				Invited = false,
+				InviteRequested = false,
+				SortIndex = messageSortIndex
+			}
+			LFGMM_GLOBAL.MESSAGES[player] = newMessage
+		end
+		
+		-- Clean up old messages (over 30 minutes)
+		local maxAge = now - (60 * 30)
+		for playerName, playerMessage in pairs(LFGMM_GLOBAL.MESSAGES) do
+			if playerMessage.Timestamp < maxAge then
+				LFGMM_GLOBAL.MESSAGES[playerName] = nil
+			end
+		end
+		
+		-- Search for match
+		if LFGMM_DB.SEARCH.LFG.Running or LFGMM_DB.SEARCH.LFM.Running then
+			LFGMM_Core_FindSearchMatch()
+		end
+	
+		-- Refresh UI
+		LFGMM_ListTab_Refresh()
+		LFGMM_ListTab_MessageInfoWindow_Refresh()
+		LFGMM_PopupWindow_Refresh()
+	end
+end
+
+-- Main event handler dispatcher
 function LFGMM_Core_EventHandler(self, event, ...)
 	-- Initialize
-	if (not LFGMM_GLOBAL.READY and event == "PLAYER_ENTERING_WORLD") then
-		-- Get player info
-		LFGMM_GLOBAL.PLAYER_NAME = UnitName("player");
-		LFGMM_GLOBAL.PLAYER_LEVEL = UnitLevel("player");
-		LFGMM_GLOBAL.PLAYER_CLASS = LFGMM_GLOBAL.CLASSES[select(2, UnitClass("player"))];
-
-		-- Get group members
-		LFGMM_Core_GetGroupMembers();
-
-		-- Load
-		LFGMM_Load();
-		LFGMM_Core_Initialize();
-
-		-- Join channels
-		C_Timer.After(5, function()
-			LFGMM_Core_JoinChannels();
-		end);
+	if not LFGMM_GLOBAL.READY and event == "PLAYER_ENTERING_WORLD" then
+		LFGMM_Core_HandlePlayerEnteringWorld()
 		
 	-- Return if not ready
-	elseif (not LFGMM_GLOBAL.READY) then
-		return;
+	elseif not LFGMM_GLOBAL.READY then
+		return
 	
-	-- Zone changed (join channels)
-	elseif (event == "ZONE_CHANGED_NEW_AREA") then
-		C_Timer.After(5, function()
-			LFGMM_Core_JoinChannels();
-		end);
+	-- Dispatch to appropriate handler
+	elseif event == "ZONE_CHANGED_NEW_AREA" then
+		LFGMM_Core_HandleZoneChanged()
 	
-	-- Update player level
-	elseif (event == "PLAYER_LEVEL_UP") then
-		LFGMM_GLOBAL.PLAYER_LEVEL = select(1, ...);
-		LFGMM_LfgTab_UpdateBroadcastMessage();
-		LFGMM_SettingsTab_UpdateRequestInviteMessage();
+	elseif event == "PLAYER_LEVEL_UP" then
+		LFGMM_Core_HandlePlayerLevelUp(select(1, ...))
 		
-	-- Show invited popup
-	elseif (event == "PARTY_INVITE_REQUEST") then
-		local player = select(1, ...);
-		local message = LFGMM_GLOBAL.MESSAGES[player];
+	elseif event == "PARTY_INVITE_REQUEST" then
+		LFGMM_Core_HandlePartyInviteRequest(select(1, ...))
 		
-		if (message ~= nil) then
-			LFGMM_PopupWindow_ShowForInvited(message);
-			LFGMM_PopupWindow_MoveToPartyInviteDialog();
-		end
+	elseif event == "CHAT_MSG_SYSTEM" then
+		LFGMM_Core_HandleChatSystemMessage(select(1, ...))
 		
-	-- Parse /who response for player level
-	elseif (event == "CHAT_MSG_SYSTEM") then
-		local message = select(1, ...);
-		local player, level = string.match(message, "%[(.+)%]%ph%s?: [^%s]* (%d*)");
-
-		if (LFGMM_GLOBAL.MESSAGES[player] ~= nil) then
-			LFGMM_GLOBAL.MESSAGES[player].PlayerLevel = level;
-			
-			LFGMM_ListTab_Refresh();
-			LFGMM_ListTab_MessageInfoWindow_Refresh();
-			LFGMM_PopupWindow_Refresh();
-		end
-	
-	-- Update group members
-	elseif (event == "GROUP_ROSTER_UPDATE") then
-		LFGMM_Core_GetGroupMembers();
-
-		LFGMM_Core_Refresh();
-		LFGMM_LfmTab_UpdateBroadcastMessage();
-		LFGMM_ListTab_MessageInfoWindow_Refresh();
+	elseif event == "GROUP_ROSTER_UPDATE" then
+		LFGMM_Core_HandleGroupRosterUpdate()
 		
-		-- Get group size
-		local groupSize = #LFGMM_GLOBAL.GROUP_MEMBERS;
-		
-		-- Abort LFG if group is joined
-		if (LFGMM_DB.SEARCH.LFG.Running and LFGMM_DB.SEARCH.LFG.AutoStop and LFGMM_GLOBAL.AUTOSTOP_AVAILABLE) then
-			if (groupSize > 1) then
-				LFGMM_DB.SEARCH.LFG.Running = false;
-				LFGMM_PopupWindow_Hide();
-				LFGMM_BroadcastWindow_CancelBroadcast();
-				
-				LFGMM_MainWindowTab1:Show();
-				LFGMM_MainWindowTab2:Show();
-				
-				LFGMM_Core_Refresh();
-				LFGMM_Core_RemoveUnavailableDungeonsFromSelections();
-				
-				LFGMM_MinimapButton_Refresh();
-			end
-
-		-- Abort LFM if dungeon group size is reached
-		elseif (LFGMM_DB.SEARCH.LFM.Running and LFGMM_DB.SEARCH.LFM.AutoStop and LFGMM_GLOBAL.AUTOSTOP_AVAILABLE) then
-			local dungeonSize = LFGMM_GLOBAL.DUNGEONS[LFGMM_DB.SEARCH.LFM.Dungeon].Size;
-			if (groupSize >= dungeonSize) then
-				LFGMM_DB.SEARCH.LFM.Running = false;
-				LFGMM_PopupWindow_Hide();
-				LFGMM_BroadcastWindow_CancelBroadcast();
-
-				LFGMM_MainWindowTab1:Show();
-				LFGMM_MainWindowTab2:Show();
-
-				LFGMM_Core_Refresh();
-				LFGMM_Core_RemoveUnavailableDungeonsFromSelections();
-				
-				LFGMM_MinimapButton_Refresh();
-			end
-		end
-
-	-- Parse LFG channel message
-	elseif (event == "CHAT_MSG_CHANNEL") then
-		local channelName = select(9, ...);
-
-		local isGeneralChannel = string.find(channelName, "^" .. LFGMM_GLOBAL.GENERAL_CHANNEL_NAME);
-		local isTradeChannel = string.find(channelName, "^" .. LFGMM_GLOBAL.TRADE_CHANNEL_NAME);
-
-		if (channelName == LFGMM_GLOBAL.LFG_CHANNEL_NAME or
-			(isGeneralChannel and LFGMM_DB.SETTINGS.UseGeneralChannel) or
-			(isTradeChannel and LFGMM_DB.SETTINGS.UseTradeChannel))
-		then
-			local now = time();
-			local player = select(5, ...);
-			local playerGuid = select(12, ...);
-			local messageOrg = select(1, ...);
-			local message = string.lower(messageOrg);
-
-			-- Ignore own messages
-			if (player == LFGMM_GLOBAL.PLAYER_NAME) then
-				return;
-			end
-			
-			-- Replace special characters in message to simplify pattern requirements
-			message = string.gsub(message, "á", "a");
-			message = string.gsub(message, "à", "a");
-			message = string.gsub(message, "ä", "a");
-			message = string.gsub(message, "â", "a");
-			message = string.gsub(message, "ã", "a");
-			message = string.gsub(message, "é", "e");
-			message = string.gsub(message, "è", "e");
-			message = string.gsub(message, "ë", "e");
-			message = string.gsub(message, "ê", "e");
-			message = string.gsub(message, "í", "i");
-			message = string.gsub(message, "ì", "i");
-			message = string.gsub(message, "ï", "i");
-			message = string.gsub(message, "î", "i");
-			message = string.gsub(message, "ñ", "n");
-			message = string.gsub(message, "ó", "o");
-			message = string.gsub(message, "ò", "o");
-			message = string.gsub(message, "ö", "o");
-			message = string.gsub(message, "ô", "o");
-			message = string.gsub(message, "õ", "o");
-			message = string.gsub(message, "ú", "u");
-			message = string.gsub(message, "ù", "u");
-			message = string.gsub(message, "ü", "u");
-			message = string.gsub(message, "û", "u");
-			message = string.gsub(message, "ß", "ss");
-			message = string.gsub(message, "œ", "oe");
-			message = string.gsub(message, "ç", "c");
-
-			-- Remove item links to prevent false positive matches from item names
-			message = string.gsub(message, "%phitem[%d:]+%ph%[.-%]", "");
-
-			-- Remove "/w me" and "/w inv" from message before parsing to avoid false positive match for DM - West
-			for _,languageCode in ipairs(LFGMM_DB.SETTINGS.IdentifierLanguages) do
-				if (languageCode == "EN") then
-					message = string.gsub(message, "/w[%W]+me", " ");
-					message = string.gsub(message, "/w[%W]+inv", " ");
-				elseif (languageCode == "DE") then
-					message = string.gsub(message, "/w[%W]+mir", " ");
-					message = string.gsub(message, "/w[%W]+bei", " ");
-				elseif (languageCode == "FR") then
-					message = string.gsub(message, "/w[%W]+moi", " ");
-					message = string.gsub(message, "/w[%W]+pour", " ");
-					message = string.gsub(message, "[%W]+w/moi", " ");
-					message = string.gsub(message, "[%W]+w/pour", " ");
-				elseif (languageCode == "ES") then
-					message = string.gsub(message, "/w[%W]+yo", " ");
-				end
-			end
-
-			local uniqueDungeonMatches = LFGMM_Utility_CreateUniqueDungeonsList();
-
-			-- Find dungeon matches
-			for _,dungeon in ipairs(LFGMM_GLOBAL.DUNGEONS) do
-				local matched = false;
-
-				for _,languageCode in ipairs(LFGMM_DB.SETTINGS.IdentifierLanguages) do
-					if (dungeon.Identifiers[languageCode] ~= nil) then
-						for _,identifier in ipairs(dungeon.Identifiers[languageCode]) do
-							if (string.find(message, "^"     .. identifier .. "[%W]+") ~= nil or
-								string.find(message, "^"     .. identifier .. "$"    ) ~= nil or
-								string.find(message, "[%W]+" .. identifier .. "[%W]+") ~= nil or
-								string.find(message, "[%W]+" .. identifier .. "$"    ) ~= nil)
-							then
-								matched = true;
-								break;
-							end
-						end
-					end
-					
-					if (matched) then
-						break;
-					end
-				end
-
-				if (matched and dungeon.NotIdentifiers ~= nil) then
-					for _,languageCode in ipairs(LFGMM_DB.SETTINGS.IdentifierLanguages) do
-						if (dungeon.NotIdentifiers[languageCode] ~= nil) then
-							for _,notIdentifier in ipairs(dungeon.NotIdentifiers[languageCode]) do
-								if (string.find(message, "^"     .. notIdentifier .. "[%W]+") ~= nil or
-									string.find(message, "^"     .. notIdentifier .. "$"    ) ~= nil or
-									string.find(message, "[%W]+" .. notIdentifier .. "[%W]+") ~= nil or
-									string.find(message, "[%W]+" .. notIdentifier .. "$"    ) ~= nil)
-								then
-									matched = false;
-									break;
-								end
-							end
-						end
-
-						if (not matched) then
-							break;
-						end
-					end
-				end
-
-				if (matched) then
-					uniqueDungeonMatches:Add(dungeon);
-					
-					if (dungeon.ParentDungeon ~= nil) then
-						uniqueDungeonMatches:Add(LFGMM_GLOBAL.DUNGEONS[dungeon.ParentDungeon]);
-					end
-				end
-			end
-			
-			-- Find dungeon fallback matches
-			for _,dungeonsFallback in ipairs(LFGMM_GLOBAL.DUNGEONS_FALLBACK) do
-				local matched = false;
-				
-				for _,languageCode in ipairs(LFGMM_DB.SETTINGS.IdentifierLanguages) do
-					if (dungeonsFallback.Identifiers[languageCode] ~= nil) then
-						for _,identifier in ipairs(dungeonsFallback.Identifiers[languageCode]) do
-							if (string.find(message, "^"     .. identifier .. "[%W]+") ~= nil or
-								string.find(message, "^"     .. identifier .. "$"    ) ~= nil or
-								string.find(message, "[%W]+" .. identifier .. "[%W]+") ~= nil or
-								string.find(message, "[%W]+" .. identifier .. "$"    ) ~= nil)
-							then
-								matched = true;
-								break;
-							end
-						end
-					end
-					
-					if (matched) then
-						break;
-					end
-				end
-				
-				if (matched) then
-					local singleInFallbackMatched = false;
-					
-					for _,dungeonIndex in ipairs(dungeonsFallback.Dungeons) do
-						if (uniqueDungeonMatches.List[dungeonIndex] ~= nil) then
-							singleInFallbackMatched = true;
-							break;
-						end
-					end
-
-					if (not singleInFallbackMatched) then
-						for _,dungeonIndex in ipairs(dungeonsFallback.Dungeons) do
-							local dungeon = LFGMM_GLOBAL.DUNGEONS[dungeonIndex];
-							uniqueDungeonMatches:Add(dungeon);
-							
-							if (dungeon.ParentDungeon ~= nil) then
-								uniqueDungeonMatches:Add(LFGMM_GLOBAL.DUNGEONS[dungeon.ParentDungeon]);
-							end
-						end
-					end
-				end
-			end
-
-			-- Remove Deadmines or Dire Maul if both are matched by the "DM" identifier and another dungeon is mentioned, based on level of the other dungeon.
-			if (uniqueDungeonMatches.List[3] ~= nil and 
-				uniqueDungeonMatches.List[39] ~= nil and
-				uniqueDungeonMatches.List[40] == nil and 
-				uniqueDungeonMatches.List[41] == nil and 
-				uniqueDungeonMatches.List[42] == nil and 
-				uniqueDungeonMatches.List[43] == nil) 
-			then
-				for _,dungeon in ipairs(uniqueDungeonMatches:GetDungeonList()) do
-					-- Remove Dire Maul as match if low level dungeon is mentioned
-					if (dungeon.Index ~= 3 and dungeon.MinLevel <= 30) then
-						uniqueDungeonMatches:Remove(LFGMM_GLOBAL.DUNGEONS[39]);
-						break;
-					end
-
-					-- Remove Deadmines as match if high level dungeon is mentioned
-					if (dungeon.Index ~= 39 and dungeon.MinLevel >= 50) then
-						uniqueDungeonMatches:Remove(LFGMM_GLOBAL.DUNGEONS[3]);
-						break;
-					end
-				end
-			end
-			
-			-- "Any dungeon" match
-			local isAnyDungeonMatch = LFGMM_Utility_ArrayContainsAll(uniqueDungeonMatches:GetIndexList(), LFGMM_GLOBAL.DUNGEONS_FALLBACK[4].Dungeons);
-
-			-- Convert to indexed list
-			local dungeonMatches = uniqueDungeonMatches:GetDungeonList();
-			
-			-- Find type of message (LFG / LFM / UNKNOWN)
-			local typeMatch = nil;
-			for _,languageCode in ipairs(LFGMM_DB.SETTINGS.IdentifierLanguages) do
-				if (LFGMM_GLOBAL.MESSAGETYPE_IDENTIFIERS[languageCode] ~= nil) then
-					for _,identifierCollection in ipairs(LFGMM_GLOBAL.MESSAGETYPE_IDENTIFIERS[languageCode]) do
-						for _,identifier in ipairs(identifierCollection.Identifiers) do
-							if (string.find(message, identifier) ~= nil) then
-								typeMatch = identifierCollection.Type;
-							end
-						end
-						
-						if (typeMatch ~= nil) then
-							break;
-						end
-					end
-				end
-
-				if (typeMatch ~= nil) then
-					break;
-				end
-			end
-			
-			if (typeMatch == nil) then
-				typeMatch = "UNKNOWN";
-
-				if (#dungeonMatches > 0) then
-					if (string.find(message, "wts.-boost") ~= nil) then
-						typeMatch = "LFM";
-					elseif (string.find(message, "wtb.-boost") ~= nil) then
-						typeMatch = "LFG";
-					elseif (string.find(message, "heal[i]?[n]?[g]?[%W]*service[s]?") ~= nil or string.find(message, "tank[i]?[n]?[g]?[%W]*service[s]?") ~= nil) then
-						typeMatch = "LFG";
-					end
-				end
-			end
-
-			if (typeMatch == "UNKNOWN" and #dungeonMatches == 0) then
-				-- Ignore general and trade messages without dungeon and type match
-				if (isGeneralChannel or isTradeChannel) then
-					return;
-				end
-
-				-- Ignore WTB and WTS messages
-				if (string.find(message, "wtb") ~= nil or string.find(message, "wts") ~= nil) then
-					return;
-				end
-			end
-
-			-- Find sort index
-			local messageSortIndex;
-			if (#dungeonMatches == 0) then
-				messageSortIndex = -1;
-				
-			elseif (isAnyDungeonMatch) then
-				messageSortIndex = 0;
-			
-			else
-				table.sort(dungeonMatches, function(left, right) return left.Index < right.Index; end);
-				messageSortIndex = dungeonMatches[1].Index;
-				
-				-- Sort by first subdungeon (if present) if first dungeon is a parent
-				if (dungeonMatches[1].SubDungeons ~= nil and #dungeonMatches > 1) then
-					if (LFGMM_Utility_ArrayContains(dungeonMatches[1].SubDungeons, dungeonMatches[2].Index)) then
-						messageSortIndex = dungeonMatches[2].Index;
-					end
-				end
-			end
-
-			-- Remove icons from message
-			messageOrg = string.gsub(messageOrg, "{[rR][tT][%d]}", "");
-			messageOrg = string.gsub(messageOrg, "{[sS][tT][aA][rR]}", "");
-			messageOrg = string.gsub(messageOrg, "{[yY][eE][lL][lL][oO][wW]}", "");
-			messageOrg = string.gsub(messageOrg, "{[cC][iI][rR][cC][lL][eE]}", "");
-			messageOrg = string.gsub(messageOrg, "{[oO][rR][aA][nN][gG][eE]}", "");
-			messageOrg = string.gsub(messageOrg, "{[dD][iI][aA][mM][oO][nN][dD]}", "");
-			messageOrg = string.gsub(messageOrg, "{[pP][uU][rR][pP][lL][eE]}", "");
-			messageOrg = string.gsub(messageOrg, "{[tT][rR][iI][aA][nN][gG][lL][eE]}", "");
-			messageOrg = string.gsub(messageOrg, "{[gG][rR][eE][eE][nN]}", "");
-			messageOrg = string.gsub(messageOrg, "{[mM][oO][oO][nN]}", "");
-			messageOrg = string.gsub(messageOrg, "{[sS][qQ][uU][aA][rR][eE]}", "");
-			messageOrg = string.gsub(messageOrg, "{[bB][lL][uU][eE]}", "");
-			messageOrg = string.gsub(messageOrg, "{[cC][rR][oO][sS][sS]}", "");
-			messageOrg = string.gsub(messageOrg, "{[xX]}", "");
-			messageOrg = string.gsub(messageOrg, "{[rR][eE][dD]}", "");
-			messageOrg = string.gsub(messageOrg, "{[sS][kK][uU][lL][lL]}", "");
-			messageOrg = string.gsub(messageOrg, "{[wW][hH][iI][tT][eE]}", "");
-
-			-- Trim spaces and remove double spaces in message
-			while (string.find(messageOrg, "%s%s") ~= nil) do
-				messageOrg = string.gsub(messageOrg, "%s%s", " ");
-			end
-			messageOrg = string.gsub(messageOrg, "^%s", "");
-			messageOrg = string.gsub(messageOrg, "%s$", "");
-
-			-- Update existing message
-			if (LFGMM_GLOBAL.MESSAGES[player] ~= nil) then
-				local savedMessage = LFGMM_GLOBAL.MESSAGES[player];
-				
-				-- Ignore message if previous message from player matched dungeons and the new message dont match any
-				if (#savedMessage.Dungeons > 0 and #dungeonMatches == 0) then
-					return;
-				end
-				
-				-- Update message
-				savedMessage.Timestamp = now;
-				savedMessage.Type = typeMatch;
-				savedMessage.Message = messageOrg;
-				savedMessage.Dungeons = dungeonMatches;
-				savedMessage.SortIndex = messageSortIndex;
-				
-			-- Add new message
-			else
-				local classFile = select(2, GetPlayerInfoByGUID(playerGuid));
-
-				local newMessage = {
-					Player = player,
-					PlayerClass = LFGMM_GLOBAL.CLASSES[classFile],
-					PlayerLevel = nil,
-					Timestamp = now,
-					Type = typeMatch,
-					Message = messageOrg,
-					Dungeons = dungeonMatches,
-					Ignore = {},
-					Invited = false,
-					InviteRequested = false,
-					SortIndex = messageSortIndex
-				};
-				
-				LFGMM_GLOBAL.MESSAGES[player] = newMessage;
-			end
-				
-			-- Traverse messages and remove old ones (over 30 minutes)
-			local maxAge = now - (60 * 30);
-			for player,message in pairs(LFGMM_GLOBAL.MESSAGES) do
-				if (message.Timestamp < maxAge) then
-					LFGMM_GLOBAL.MESSAGES[player] = nil;
-				end
-			end
-			
-			-- Search for match
-			if (LFGMM_DB.SEARCH.LFG.Running or LFGMM_DB.SEARCH.LFM.Running) then
-				LFGMM_Core_FindSearchMatch();
-			end
-		
-			-- Refresh
-			LFGMM_ListTab_Refresh();
-			LFGMM_ListTab_MessageInfoWindow_Refresh();
-			LFGMM_PopupWindow_Refresh();
-		end
+	elseif event == "CHAT_MSG_CHANNEL" then
+		local message = select(1, ...)
+		local player = select(5, ...)
+		local playerGuid = select(12, ...)
+		local channelName = select(9, ...)
+		LFGMM_Core_HandleChatChannelMessage(message, player, playerGuid, channelName)
 	end
 end
 
@@ -874,4 +892,3 @@ SLASH_LFGMM3 = "/matchmaker";
 SlashCmdList["LFGMM"] = function() 
 	LFGMM_Core_MainWindow_ToggleShow();
 end
-

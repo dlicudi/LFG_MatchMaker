@@ -853,56 +853,135 @@
 			</Anchor>
 		</Anchors>
 
-		<Size x="240" y="120" />
+		<Size x="280" y="150" />
 
 		<Layers>
-			<Layer>
-				<FontString text="{C} - your class" inherits="GameFontNormal">
+			<Layer level="BACKGROUND">
+				<Texture file="Interface\Tooltips\UI-Tooltip-Background" setAllPoints="true">
+					<Color a="0.9" r="0" g="0" b="0" />
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<!-- Header background -->
+				<Texture file="Interface\DialogFrame\UI-DialogBox-Header">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
-							<Offset x="15" y="-15" />
+						<Anchor point="TOP">
+							<Offset x="0" y="8" />
+						</Anchor>
+					</Anchors>
+					<Size x="256" y="32" />
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<!-- Header icon -->
+				<Texture file="Interface\Icons\INV_Letter_18">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="12" y="-10" />
+						</Anchor>
+					</Anchors>
+					<Size x="16" y="16" />
+				</Texture>
+				
+				<!-- Header title -->
+				<FontString text="Message Variables" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="32" y="-11" />
+						</Anchor>
+					</Anchors>
+					<Color a="1" r="1" g="0.82" b="0" />
+				</FontString>
+
+				<!-- Variable descriptions with better spacing and alignment -->
+				<FontString text="{C}" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="15" y="-35" />
+						</Anchor>
+					</Anchors>
+					<Color a="1" r="0" g="1" b="0" />
+				</FontString>
+				<FontString text="Your class" inherits="GameFontHighlightSmall">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="45" y="-35" />
 						</Anchor>
 					</Anchors>
 				</FontString>
 
-				<FontString text="{X} - your class (localized)" inherits="GameFontNormal">
+				<FontString text="{X}" inherits="GameFontNormalSmall">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
-							<Offset x="15" y="-30" />
+						<Anchor point="TOPLEFT">
+							<Offset x="15" y="-50" />
+						</Anchor>
+					</Anchors>
+					<Color a="1" r="0" g="1" b="0" />
+				</FontString>
+				<FontString text="Your class (localized)" inherits="GameFontHighlightSmall">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="45" y="-50" />
 						</Anchor>
 					</Anchors>
 				</FontString>
 
-				<FontString text="{L} - your level" inherits="GameFontNormal">
+				<FontString text="{L}" inherits="GameFontNormalSmall">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
-							<Offset x="15" y="-45" />
+						<Anchor point="TOPLEFT">
+							<Offset x="15" y="-65" />
+						</Anchor>
+					</Anchors>
+					<Color a="1" r="0" g="1" b="0" />
+				</FontString>
+				<FontString text="Your level" inherits="GameFontHighlightSmall">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="45" y="-65" />
 						</Anchor>
 					</Anchors>
 				</FontString>
 
-				<FontString text="{D} - dungeon name(s)" inherits="GameFontNormal">
+				<FontString text="{D}" inherits="GameFontNormalSmall">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
-							<Offset x="15" y="-60" />
+						<Anchor point="TOPLEFT">
+							<Offset x="15" y="-80" />
+						</Anchor>
+					</Anchors>
+					<Color a="1" r="0" g="1" b="0" />
+				</FontString>
+				<FontString text="Dungeon name(s)" inherits="GameFontHighlightSmall">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="45" y="-80" />
 						</Anchor>
 					</Anchors>
 				</FontString>
 
-				<FontString text="{A} - abbreviated dungeon name(s)" inherits="GameFontNormal">
+				<FontString text="{A}" inherits="GameFontNormalSmall">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
-							<Offset x="15" y="-75" />
+						<Anchor point="TOPLEFT">
+							<Offset x="15" y="-95" />
+						</Anchor>
+					</Anchors>
+					<Color a="1" r="0" g="1" b="0" />
+				</FontString>
+				<FontString text="Abbreviated dungeon name(s)" inherits="GameFontHighlightSmall">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="45" y="-95" />
 						</Anchor>
 					</Anchors>
 				</FontString>
 				
-				<FontString text="(Max message length: 255)" inherits="GameFontHighlight">
+				<!-- Footer note with better styling -->
+				<FontString text="Max message length: 255 characters" inherits="GameFontHighlightSmall">
 					<Anchors>
-						<Anchor point="CENTER" relativePoint="BOTTOM">
-							<Offset x="0" y="20" />
+						<Anchor point="BOTTOM">
+							<Offset x="0" y="12" />
 						</Anchor>
 					</Anchors>
+					<Color a="1" r="0.7" g="0.7" b="0.7" />
 				</FontString>
 			</Layer>
 		</Layers>
@@ -916,40 +995,103 @@
 			</Anchor>
 		</Anchors>
 
-		<Size x="240" y="90" />
+		<Size x="280" y="120" />
 
 		<Layers>
-			<Layer>
-				<FontString text="{N} - number of open slots" inherits="GameFontNormal">
+			<Layer level="BACKGROUND">
+				<Texture file="Interface\Tooltips\UI-Tooltip-Background" setAllPoints="true">
+					<Color a="0.9" r="0" g="0" b="0" />
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<!-- Header background -->
+				<Texture file="Interface\DialogFrame\UI-DialogBox-Header">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
-							<Offset x="15" y="-15" />
+						<Anchor point="TOP">
+							<Offset x="0" y="8" />
+						</Anchor>
+					</Anchors>
+					<Size x="256" y="32" />
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<!-- Header icon -->
+				<Texture file="Interface\Icons\INV_Letter_15">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="12" y="-10" />
+						</Anchor>
+					</Anchors>
+					<Size x="16" y="16" />
+				</Texture>
+				
+				<!-- Header title -->
+				<FontString text="Message Variables" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="32" y="-11" />
+						</Anchor>
+					</Anchors>
+					<Color a="1" r="1" g="0.82" b="0" />
+				</FontString>
+
+				<!-- Variable descriptions with better spacing and alignment -->
+				<FontString text="{N}" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="15" y="-35" />
+						</Anchor>
+					</Anchors>
+					<Color a="1" r="0" g="1" b="0" />
+				</FontString>
+				<FontString text="Number of open slots" inherits="GameFontHighlightSmall">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="45" y="-35" />
 						</Anchor>
 					</Anchors>
 				</FontString>
 
-				<FontString text="{D} - dungeon name" inherits="GameFontNormal">
+				<FontString text="{D}" inherits="GameFontNormalSmall">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
-							<Offset x="15" y="-30" />
+						<Anchor point="TOPLEFT">
+							<Offset x="15" y="-50" />
+						</Anchor>
+					</Anchors>
+					<Color a="1" r="0" g="1" b="0" />
+				</FontString>
+				<FontString text="Dungeon name" inherits="GameFontHighlightSmall">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="45" y="-50" />
 						</Anchor>
 					</Anchors>
 				</FontString>
 
-				<FontString text="{A} - abbreviated dungeon name" inherits="GameFontNormal">
+				<FontString text="{A}" inherits="GameFontNormalSmall">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
-							<Offset x="15" y="-45" />
+						<Anchor point="TOPLEFT">
+							<Offset x="15" y="-65" />
+						</Anchor>
+					</Anchors>
+					<Color a="1" r="0" g="1" b="0" />
+				</FontString>
+				<FontString text="Abbreviated dungeon name" inherits="GameFontHighlightSmall">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="45" y="-65" />
 						</Anchor>
 					</Anchors>
 				</FontString>
 				
-				<FontString text="(Max message length: 255)" inherits="GameFontHighlight">
+				<!-- Footer note with better styling -->
+				<FontString text="Max message length: 255 characters" inherits="GameFontHighlightSmall">
 					<Anchors>
-						<Anchor point="CENTER" relativePoint="BOTTOM">
-							<Offset x="0" y="20" />
+						<Anchor point="BOTTOM">
+							<Offset x="0" y="12" />
 						</Anchor>
 					</Anchors>
+					<Color a="1" r="0.7" g="0.7" b="0.7" />
 				</FontString>
 			</Layer>
 		</Layers>
@@ -963,141 +1105,137 @@
 			</Anchor>
 		</Anchors>
 
-		<Size x="260" y="270" />
+		<Size x="300" y="200" />
 
 		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture file="Interface\Tooltips\UI-Tooltip-Background" setAllPoints="true">
+					<Color a="0.95" r="0" g="0" b="0" />
+				</Texture>
+			</Layer>
 			<Layer level="OVERLAY">
-				<FontString name="LFGMM_ListTab_MessageInfoWindow_PlayerText" inherits="GameFontNormal">
+				<!-- Player name as title -->
+				<FontString name="LFGMM_ListTab_MessageInfoWindow_PlayerText" inherits="GameFontNormalLarge">
 					<Anchors>
-						<Anchor point="TOP" relativePoint="TOP">
-							<Offset x="0" y="-20" />
+						<Anchor point="TOP">
+							<Offset x="0" y="-12" />
 						</Anchor>
 					</Anchors>
+				</FontString>
+
+				<!-- Player info section with clean background -->
+				<Texture file="Interface\Common\Common-Input-Border">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="10" y="-35" />
+						</Anchor>
+						<Anchor point="TOPRIGHT">
+							<Offset x="-10" y="-75" />
+						</Anchor>
+					</Anchors>
+					<Color a="0.2" r="0.1" g="0.1" b="0.1" />
+				</Texture>
+
+				<!-- Class icon -->
+				<Texture name="LFGMM_ListTab_MessageInfoWindow_ClassIcon" file="Interface\WorldStateFrame\Icons-Classes">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="15" y="-40" />
+						</Anchor>
+					</Anchors>
+					<Size x="28" y="28" />
+				</Texture>
+				
+				<!-- Level text -->
+				<FontString name="LFGMM_ListTab_MessageInfoWindow_LevelText" text="?" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="50" y="-42" />
+						</Anchor>
+					</Anchors>
+					<Color a="1" r="1" g="1" b="1" />
 				</FontString>
 				
-				<FontString name="LFGMM_ListTab_MessageInfoWindow_MessageText" inherits="GameFontHighlight" nonspacewrap="true">
+				<!-- Class text -->
+				<FontString name="LFGMM_ListTab_MessageInfoWindow_ClassText" inherits="GameFontNormalSmall">
 					<Anchors>
-						<Anchor point="TOP" relativePoint="TOP">
-							<Offset x="0" y="-40" />
+						<Anchor point="TOPLEFT">
+							<Offset x="50" y="-60" />
 						</Anchor>
 					</Anchors>
-
-					<Size x="230" />
+					<Color a="1" r="0.8" g="0.8" b="0.8" />
 				</FontString>
 
-				<FontString name="LFGMM_ListTab_MessageInfoWindow_InPartyText" hidden="true" text="In group" inherits="GameFontNormal">
+				<!-- Time stamp -->
+				<FontString name="LFGMM_ListTab_MessageInfoWindow_TimeText" inherits="GameFontNormalSmall">
 					<Anchors>
-						<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT">
-							<Offset x="-45" y="37" />
+						<Anchor point="TOPRIGHT">
+							<Offset x="-15" y="-45" />
 						</Anchor>
 					</Anchors>
-					
-					<Color a="1" r="0" g="1" b="0" />
+					<Color a="1" r="0.6" g="0.6" b="0.6" />
+				</FontString>
+
+				<!-- Message content -->
+				<FontString name="LFGMM_ListTab_MessageInfoWindow_MessageText" inherits="GameFontHighlight" nonspacewrap="true">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="15" y="-85" />
+						</Anchor>
+						<Anchor point="TOPRIGHT">
+							<Offset x="-15" y="-85" />
+						</Anchor>
+					</Anchors>
+				</FontString>
+
+				<!-- Status indicator -->
+				<FontString name="LFGMM_ListTab_MessageInfoWindow_InPartyText" hidden="true" text="✓ In Group" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT">
+							<Offset x="-15" y="85" />
+						</Anchor>
+					</Anchors>
+					<Color a="1" r="0" g="0.8" b="0" />
 				</FontString>
 			</Layer>
 		</Layers>
 		
 		<Frames>
-			<Frame name="LFGMM_ListTab_MessageInfoWindow_PlayerInfoFrame" inherits="TooltipBorderedFrameTemplate">
-				<Anchors>
-					<Anchor point="BOTTOM" relativePoint="TOP" relativeTo="LFGMM_ListTab_MessageInfoWindow">
-						<Offset x="0" y="-4" />
-					</Anchor>
-				</Anchors>
-				
-				<Layers>
-					<Layer level="OVERLAY">
-						<Texture name="LFGMM_ListTab_MessageInfoWindow_ClassIcon" file="Interface\WorldStateFrame\Icons-Classes">
-							<Anchors>
-								<Anchor point="TOPLEFT" relativePoint="TOPLEFT" >
-									<Offset x="15" y="-35" />
-								</Anchor>
-							</Anchors>
-
-							<Size x="25" y="25" />
-						</Texture>
-						
-						<FontString name="LFGMM_ListTab_MessageInfoWindow_ClassText" inherits="GameFontNormal">
-							<Anchors>
-								<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT">
-									<Offset x="-15" y="-48" />
-								</Anchor>
-							</Anchors>
-						</FontString>
-
-						<FontString name="LFGMM_ListTab_MessageInfoWindow_LevelText" text="?" inherits="GameFontNormal">
-							<Anchors>
-								<Anchor point="BOTTOM" relativePoint="TOP" relativeTo="LFGMM_ListTab_MessageInfoWindow_ClassText">
-									<Offset x="0" y="0" />
-								</Anchor>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
-				
-				<Size x="260" y="48" />
-			</Frame>
-			
-			<Frame name="LFGMM_ListTab_MessageInfoWindow_TimeTextFrame" inherits="TooltipBorderedFrameTemplate">
-				<Anchors>
-					<Anchor point="BOTTOM" relativePoint="TOP" relativeTo="LFGMM_ListTab_MessageInfoWindow_PlayerInfoFrame">
-						<Offset x="0" y="-4" />
-					</Anchor>
-				</Anchors>
-				
-				<Layers>
-					<Layer level="OVERLAY">
-						<FontString name="LFGMM_ListTab_MessageInfoWindow_TimeText" inherits="GameFontNormalSmall">
-							<Anchors>
-								<Anchor point="TOP" relativePoint="TOP">
-									<Offset x="0" y="-9" />
-								</Anchor>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
-				
-				<Size x="260" y="28" />
-			</Frame>
-			
+			<!-- Action buttons with better spacing and sizing -->
 			<Button name="LFGMM_ListTab_MessageInfoWindow_WhoButton" text="Who?" inherits="UIPanelButtonTemplate">
 				<Anchors>
-					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT">
+					<Anchor point="BOTTOMLEFT">
 						<Offset x="15" y="45" />
 					</Anchor>
 				</Anchors>
-
-				<Size x="110" y="25" />
+				<Size x="65" y="25" />
 			</Button>
 			
 			<Button name="LFGMM_ListTab_MessageInfoWindow_WhisperButton" text="Whisper" inherits="UIPanelButtonTemplate">
 				<Anchors>
-					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT">
+					<Anchor point="BOTTOMLEFT">
+						<Offset x="85" y="45" />
+					</Anchor>
+				</Anchors>
+				<Size x="65" y="25" />
+			</Button>
+
+			<Button name="LFGMM_ListTab_MessageInfoWindow_RequestInviteButton" text="Request Invite" inherits="UIPanelButtonTemplate">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
 						<Offset x="15" y="15" />
 					</Anchor>
 				</Anchors>
-
-				<Size x="110" y="25" />
-			</Button>
-
-			<Button name="LFGMM_ListTab_MessageInfoWindow_RequestInviteButton" text="Request invite" inherits="UIPanelButtonTemplate">
-				<Anchors>
-					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT">
-						<Offset x="-15" y="45" />
-					</Anchor>
-				</Anchors>
-
-				<Size x="110" y="25" />
+				<Size x="100" y="25" />
 			</Button>
 			
 			<Button name="LFGMM_ListTab_MessageInfoWindow_InviteButton" text="Invite" inherits="UIPanelButtonTemplate">
 				<Anchors>
-					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT">
-						<Offset x="-15" y="15" />
+					<Anchor point="BOTTOMLEFT">
+						<Offset x="125" y="15" />
 					</Anchor>
 				</Anchors>
-
-				<Size x="110" y="25" />
+				<Size x="65" y="25" />
 			</Button>
 		</Frames>
 	</Frame>
@@ -1169,40 +1307,103 @@
 			</Anchor>
 		</Anchors>
 
-		<Size x="240" y="90" />
+		<Size x="280" y="120" />
 		
 		<Layers>
-			<Layer>
-				<FontString text="{C} - your class" inherits="GameFontNormal">
+			<Layer level="BACKGROUND">
+				<Texture file="Interface\Tooltips\UI-Tooltip-Background" setAllPoints="true">
+					<Color a="0.9" r="0" g="0" b="0" />
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<!-- Header background -->
+				<Texture file="Interface\DialogFrame\UI-DialogBox-Header">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
-							<Offset x="15" y="-15" />
+						<Anchor point="TOP">
+							<Offset x="0" y="8" />
+						</Anchor>
+					</Anchors>
+					<Size x="256" y="32" />
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<!-- Header icon -->
+				<Texture file="Interface\Icons\INV_Letter_17">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="12" y="-10" />
+						</Anchor>
+					</Anchors>
+					<Size x="16" y="16" />
+				</Texture>
+				
+				<!-- Header title -->
+				<FontString text="Request Variables" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="32" y="-11" />
+						</Anchor>
+					</Anchors>
+					<Color a="1" r="1" g="0.82" b="0" />
+				</FontString>
+
+				<!-- Variable descriptions with better spacing and alignment -->
+				<FontString text="{C}" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="15" y="-35" />
+						</Anchor>
+					</Anchors>
+					<Color a="1" r="0" g="1" b="0" />
+				</FontString>
+				<FontString text="Your class" inherits="GameFontHighlightSmall">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="45" y="-35" />
 						</Anchor>
 					</Anchors>
 				</FontString>
 
-				<FontString text="{X} - your class (localized)" inherits="GameFontNormal">
+				<FontString text="{X}" inherits="GameFontNormalSmall">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
-							<Offset x="15" y="-30" />
+						<Anchor point="TOPLEFT">
+							<Offset x="15" y="-50" />
+						</Anchor>
+					</Anchors>
+					<Color a="1" r="0" g="1" b="0" />
+				</FontString>
+				<FontString text="Your class (localized)" inherits="GameFontHighlightSmall">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="45" y="-50" />
 						</Anchor>
 					</Anchors>
 				</FontString>
 
-				<FontString text="{L} - your level" inherits="GameFontNormal">
+				<FontString text="{L}" inherits="GameFontNormalSmall">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
-							<Offset x="15" y="-45" />
+						<Anchor point="TOPLEFT">
+							<Offset x="15" y="-65" />
+						</Anchor>
+					</Anchors>
+					<Color a="1" r="0" g="1" b="0" />
+				</FontString>
+				<FontString text="Your level" inherits="GameFontHighlightSmall">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="45" y="-65" />
 						</Anchor>
 					</Anchors>
 				</FontString>
-		
-				<FontString text="(Max message length: 255)" inherits="GameFontHighlight">
+				
+				<!-- Footer note with better styling -->
+				<FontString text="Max message length: 255 characters" inherits="GameFontHighlightSmall">
 					<Anchors>
-						<Anchor point="CENTER" relativePoint="BOTTOM">
-							<Offset x="0" y="20" />
+						<Anchor point="BOTTOM">
+							<Offset x="0" y="12" />
 						</Anchor>
 					</Anchors>
+					<Color a="1" r="0.7" g="0.7" b="0.7" />
 				</FontString>
 			</Layer>
 		</Layers>
@@ -1216,28 +1417,102 @@
 			</Anchor>
 		</Anchors>
 
-		<Size x="240" y="105" />
+		<Size x="300" y="140" />
 		
 		<Layers>
-			<Layer>
-				<FontString text="Additional channels" inherits="GameFontNormal">
+			<Layer level="BACKGROUND">
+				<Texture file="Interface\Tooltips\UI-Tooltip-Background" setAllPoints="true">
+					<Color a="0.9" r="0" g="0" b="0" />
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<!-- Header background -->
+				<Texture file="Interface\DialogFrame\UI-DialogBox-Header">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
-							<Offset x="15" y="-15" />
+						<Anchor point="TOP">
+							<Offset x="0" y="8" />
 						</Anchor>
 					</Anchors>
-
-					<Size x="210" />
+					<Size x="290" y="32" />
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<!-- Header icon -->
+				<Texture file="Interface\Icons\INV_Misc_Note_01">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="12" y="-10" />
+						</Anchor>
+					</Anchors>
+					<Size x="16" y="16" />
+				</Texture>
+				
+				<!-- Header title -->
+				<FontString text="Additional Channels" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="32" y="-11" />
+						</Anchor>
+					</Anchors>
+					<Color a="1" r="1" g="0.82" b="0" />
 				</FontString>
 
-				<FontString text="Messages from additional channels will only be listed when both messagetype (LFG/LFM) and dungeon is matched. Partial matches will be ignored." inherits="GameFontHighlight" nonspacewrap="true">
+				<!-- Info icon -->
+				<Texture file="Interface\Common\help-i">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
-							<Offset x="15" y="-30" />
+						<Anchor point="TOPLEFT">
+							<Offset x="15" y="-35" />
 						</Anchor>
 					</Anchors>
-					
-					<Size x="210" />
+					<Size x="14" y="14" />
+				</Texture>
+
+				<!-- Explanation text with better formatting -->
+				<FontString text="Messages from additional channels" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="35" y="-37" />
+						</Anchor>
+					</Anchors>
+					<Color a="1" r="1" g="1" b="1" />
+				</FontString>
+
+				<FontString text="will only be listed when BOTH:" inherits="GameFontHighlightSmall">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="15" y="-55" />
+						</Anchor>
+					</Anchors>
+					<Color a="1" r="0.9" g="0.9" b="0.9" />
+				</FontString>
+
+				<!-- Bullet points with better alignment -->
+				<FontString text="• Message type (LFG/LFM) is clear" inherits="GameFontHighlightSmall">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="20" y="-70" />
+						</Anchor>
+					</Anchors>
+					<Color a="1" r="0.8" g="0.8" b="0.8" />
+				</FontString>
+
+				<FontString text="• Dungeon is identified" inherits="GameFontHighlightSmall">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="20" y="-85" />
+						</Anchor>
+					</Anchors>
+					<Color a="1" r="0.8" g="0.8" b="0.8" />
+				</FontString>
+
+				<!-- Footer note -->
+				<FontString text="Partial matches will be ignored" inherits="GameFontHighlightSmall">
+					<Anchors>
+						<Anchor point="BOTTOM">
+							<Offset x="0" y="12" />
+						</Anchor>
+					</Anchors>
+					<Color a="1" r="0.7" g="0.7" b="0.7" />
 				</FontString>
 			</Layer>
 		</Layers>

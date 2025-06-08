@@ -309,7 +309,12 @@ function LFGMM_Utility_GetDungeonMessageText(dungeons, separator, lastSeparator)
 
 	local allDungeonIndexes = {};
 	for _,dungeon in ipairs(dungeons) do
-		table.insert(allDungeonIndexes, dungeon.Index);
+		-- Handle both dungeon objects and dungeon indices
+		if (type(dungeon) == "table" and dungeon.Index) then
+			table.insert(allDungeonIndexes, dungeon.Index);
+		elseif (type(dungeon) == "number") then
+			table.insert(allDungeonIndexes, dungeon);
+		end
 	end
 
 	local isAnyDungeonsMatch = false;
@@ -320,10 +325,23 @@ function LFGMM_Utility_GetDungeonMessageText(dungeons, separator, lastSeparator)
 		isAnyDungeonsMatch = true;
 	end
 
-	table.sort(dungeons, function(left, right) return left.Index < right.Index; end);
+	-- Normalize dungeons to objects and sort
+	local dungeonObjects = {};
+	for _,dungeon in ipairs(dungeons) do
+		if (type(dungeon) == "table" and dungeon.Index) then
+			table.insert(dungeonObjects, dungeon);
+		elseif (type(dungeon) == "number") then
+			local dungeonObj = LFGMM_GLOBAL.DUNGEONS[dungeon];
+			if (dungeonObj) then
+				table.insert(dungeonObjects, dungeonObj);
+			end
+		end
+	end
+	
+	table.sort(dungeonObjects, function(left, right) return left.Index < right.Index; end);
 
 	-- Sort
-	for _,dungeon in ipairs(dungeons) do
+	for _,dungeon in ipairs(dungeonObjects) do
 		if (isAnyDungeonsMatch and dungeon.Index <= 43) then
 			-- Skip
 		else

@@ -106,9 +106,12 @@ Uses WoW's `SavedVariablesPerCharacter` system for persistent storage:
 This is a direct-deployment addon with no build system:
 - **Testing**: Copy files to `World of Warcraft/_classic_era_/Interface/AddOns/LFG_MatchMaker_Continued/` and restart WoW
 - **In-game access**: Use slash commands `/lfgmm`, `/lfgmatchmaker`, or `/matchmaker` to open the addon
-- **Debugging**: Use `/console scriptErrors 1` in WoW to see Lua errors
+- **Error debugging**: Use `/console scriptErrors 1` in WoW to see Lua errors
 - **Version updating**: Modify version in `LFG_MatchMaker_Continued.toc` header
 - **Distribution**: Copy all files (excluding those in .gitignore) to a zip file for distribution
+
+### Error Handling & Debugging
+The addon uses defensive coding for player class access but allows Lua errors to bubble up for proper debugging with full stack traces. Use `/console scriptErrors 1` in WoW to see all errors.
 
 ### No Build Process
 - Files are loaded directly by WoW client  

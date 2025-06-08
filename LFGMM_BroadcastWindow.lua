@@ -26,6 +26,7 @@
 ------------------------------------------------------------------------------------------------------------------------
 
 
+
 function LFGMM_BroadcastWindow_Initialize()
 	LFGMM_BroadcastWindow:RegisterForDrag("LeftButton");
 	LFGMM_BroadcastWindow:SetScript("OnDragStart", LFGMM_BroadcastWindow.StartMoving);

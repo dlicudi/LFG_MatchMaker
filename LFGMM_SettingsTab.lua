@@ -268,9 +268,12 @@ function LFGMM_SettingsTab_UpdateRequestInviteMessage()
 	LFGMM_DB.SETTINGS.RequestInviteMessageTemplate = message;
 
 	-- Generate message
-	message = string.gsub(message, "{[Ll]}", LFGMM_GLOBAL.PLAYER_LEVEL);
-	message = string.gsub(message, "{[Cc]}", LFGMM_GLOBAL.PLAYER_CLASS.Name);
-	message = string.gsub(message, "{[Xx]}", LFGMM_GLOBAL.PLAYER_CLASS.LocalizedName);
+	message = string.gsub(message, "{[Ll]}", LFGMM_GLOBAL.PLAYER_LEVEL or "1");
+	
+	-- Safe access to player class
+	local playerClass = LFGMM_Core_GetSafePlayerClass();
+	message = string.gsub(message, "{[Cc]}", playerClass.Name);
+	message = string.gsub(message, "{[Xx]}", playerClass.LocalizedName);
 	message = string.sub(message, 1, 255);
 
 	-- Store message

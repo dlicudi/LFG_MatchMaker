@@ -161,6 +161,7 @@ LFGMM_GLOBAL = {
 	TRADE_CHANNEL_AVAILABLE = false,
 	GROUP_MEMBERS = {},
 	MESSAGES = {},
+	MESSAGE_SORT_INDEX = 1,
 	LANGUAGES = {
 		{ 
 			Code = "EN",
@@ -974,7 +975,13 @@ LFGMM_GLOBAL = {
 			Identifiers = {
 				EN = {
 					"zul[l]?[%W]*far[r]?ak[k]?",
-					"zul[l]?",
+					"zul[l]?[%W]*far[r]?a[kc][k]?",
+					"zul[l]?[%W]*farak[k]?",
+					"zul[l]?[%W]*farrak",
+					"zulfarrak",
+					"zulfarak",
+					"zul[l]?[%W]*f[a]?r[a]?k",
+					"zul[l]?[%W]*fark",
 					"zfk",
 					"zf",
 				},
@@ -986,6 +993,7 @@ LFGMM_GLOBAL = {
 			NotIdentifiers = {
 				EN = {
 					"zul[l]?[%W]*g[u]?rub",
+					"zg",
 				}
 			},
 			Size = 5,

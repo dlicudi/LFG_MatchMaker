@@ -102,20 +102,21 @@ function LFGMM_ListTab_Refresh()
 
 		else
 			local dungeonFilterMatched = false;
-			for _,dungeon in ipairs(message.Dungeons) do
+			for _,dungeonIndex in ipairs(message.Dungeons) do
+				local dungeon = LFGMM_GLOBAL.DUNGEONS[dungeonIndex];
 				local subDungeonFound = false;
 
 				-- Do not match on parent dungeon if subdungeon is also matched
-				if (dungeon.SubDungeons ~= nil) then
-					for _,dungeon2 in ipairs(message.Dungeons) do
-						if (LFGMM_Utility_ArrayContains(dungeon.SubDungeons, dungeon2.Index)) then
+				if (dungeon and dungeon.SubDungeons ~= nil) then
+					for _,dungeonIndex2 in ipairs(message.Dungeons) do
+						if (LFGMM_Utility_ArrayContains(dungeon.SubDungeons, dungeonIndex2)) then
 							subDungeonFound = true;
 							break;
 						end
 					end
 				end
 				
-				if (not subDungeonFound and LFGMM_Utility_ArrayContains(LFGMM_DB.LIST.Dungeons, dungeon.Index)) then
+				if (not subDungeonFound and LFGMM_Utility_ArrayContains(LFGMM_DB.LIST.Dungeons, dungeonIndex)) then
 					dungeonFilterMatched = true;
 					break;
 				end
@@ -164,7 +165,7 @@ function LFGMM_ListTab_Refresh()
 			local message = filteredMessages[index];
 		
 			-- Class
-			getglobal("LFGMM_ListTab_Entry" .. entryIndex .. "ClassIcon"):SetTexCoord(unpack(message.PlayerClass.IconCoordinates));
+			_G["LFGMM_ListTab_Entry" .. entryIndex .. "ClassIcon"]:SetTexCoord(unpack(message.PlayerClass.IconCoordinates));
 		
 			-- Player
 			local playerLevel = "";
@@ -172,11 +173,11 @@ function LFGMM_ListTab_Refresh()
 				playerLevel = " [" .. message.PlayerLevel .. "]";
 			end
 
-			getglobal("LFGMM_ListTab_Entry" .. entryIndex .. "PlayerName"):SetText(message.PlayerClass.Color .. message.Player .. playerLevel);
+			_G["LFGMM_ListTab_Entry" .. entryIndex .. "PlayerName"]:SetText(message.PlayerClass.Color .. message.Player .. playerLevel);
 
 			-- Message
 			local messageText = message.Message;
-			local messageLabel = getglobal("LFGMM_ListTab_Entry" .. entryIndex .. "Message");
+			local messageLabel = _G["LFGMM_ListTab_Entry" .. entryIndex .. "Message"];
 			messageLabel:SetText(messageText);
 			if (messageLabel:GetStringWidth() > 280) then
 				while (messageLabel:GetStringWidth() > 280) do
@@ -188,12 +189,20 @@ function LFGMM_ListTab_Refresh()
 			end
 		
 			-- Dungeons
-			local dungeonsLabel = getglobal("LFGMM_ListTab_Entry" .. entryIndex .. "Dungeon");
+			local dungeonsLabel = _G["LFGMM_ListTab_Entry" .. entryIndex .. "Dungeon"];
 			if (#message.Dungeons == 0) then
 				dungeonsLabel:SetText("?");
 				dungeonsLabel:SetTextColor(1, 0, 0);
 			else
-				local _,dungeonsText = LFGMM_Utility_GetDungeonMessageText(message.Dungeons, ", ", ", ");
+				-- Convert dungeon indices to dungeon objects
+				local dungeonObjects = {};
+				for _,dungeonIndex in ipairs(message.Dungeons) do
+					local dungeon = LFGMM_GLOBAL.DUNGEONS[dungeonIndex];
+					if (dungeon) then
+						table.insert(dungeonObjects, dungeon);
+					end
+				end
+				local _,dungeonsText = LFGMM_Utility_GetDungeonMessageText(dungeonObjects, ", ", ", ");
 				dungeonsLabel:SetText(dungeonsText);
 				dungeonsLabel:SetTextColor(0, 1, 0);
 				
@@ -208,7 +217,7 @@ function LFGMM_ListTab_Refresh()
 			end
 			
 			-- Type
-			local typeLabel = getglobal("LFGMM_ListTab_Entry" .. entryIndex .. "Type");
+			local typeLabel = _G["LFGMM_ListTab_Entry" .. entryIndex .. "Type"];
 			if (message.Type == "LFG") then
 				typeLabel:SetText("LFG");
 				typeLabel:SetTextColor(1, 1, 0);
@@ -221,11 +230,11 @@ function LFGMM_ListTab_Refresh()
 			end
 		
 			-- Info button
-			local infoButton = getglobal("LFGMM_ListTab_Entry" .. entryIndex .. "InfoButton");
+			local infoButton = _G["LFGMM_ListTab_Entry" .. entryIndex .. "InfoButton"];
 			infoButton.Message = message;
 		
 			-- Show
-			getglobal("LFGMM_ListTab_Entry" .. entryIndex):Show();
+			_G["LFGMM_ListTab_Entry" .. entryIndex]:Show();
 			
 			entryIndex = entryIndex + 1;
 		end
@@ -234,7 +243,7 @@ function LFGMM_ListTab_Refresh()
 	-- Hide unfilled entries
 	if (entryIndex <= 7) then
 		for entryIndex=entryIndex, 7 do
-			getglobal("LFGMM_ListTab_Entry" .. entryIndex):Hide();
+			_G["LFGMM_ListTab_Entry" .. entryIndex]:Hide();
 		end
 	end
 end

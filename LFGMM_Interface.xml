@@ -1253,14 +1253,25 @@
 		
 		<Size x="225" y="75" />
 		
+		<Layers>
+			<Layer>
+				<FontString name="LFGMM_BroadcastWindow_Title" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset x="0" y="-10" />
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		
 		<Frames>
 			<Button name="LFGMM_BroadcastWindow_BroadcastButton" text="Broadcast" inherits="UIPanelButtonTemplate">
 				<Anchors>
-					<Anchor point="CENTER" relativePoint="CENTER" relativeTo="LFGMM_BroadcastWindow">
+					<Anchor point="CENTER" relativePoint="CENTER">
 						<Offset y="-5" />
 					</Anchor>
 				</Anchors>
-
 				<Size x="100" y="25" />
 			</Button>
 		</Frames>

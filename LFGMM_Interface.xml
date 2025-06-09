@@ -33,7 +33,7 @@
 
 	<!-- LIST ENTRY TEMPLATE -->
 	<Frame name="LFGMM_ListTab_EntryTemplate" virtual="true" inherits="InsetFrameTemplate3">
-		<Size x="360" y="50" />
+		<Size x="375" y="50" />
 		<Layers>
 			<Layer>
 				<Texture name="$parentClassIcon" file="Interface\TargetingFrame\UI-Classes-Circles">
@@ -134,7 +134,7 @@
 			<Anchor point="CENTER"/>
 		</Anchors>
 
-		<Size x="400" y="410" />
+		<Size x="420" y="430" />
 		
 		<Layers>
 			<Layer>
@@ -163,7 +163,7 @@
 						<FontString text="Dungeon(s):" inherits="GameFontNormal">
 							<Anchors>
 								<Anchor point="CENTER" relativePoint="TOP">
-									<Offset x="0" y="-50" />
+									<Offset x="0" y="-45" />
 								</Anchor>
 							</Anchors>
 						</FontString>
@@ -181,7 +181,7 @@
 						<FontString name="LFGMM_LfgTab_MatchOnText" text="Match on:" inherits="GameFontNormal">
 							<Anchors>
 								<Anchor point="CENTER" relativePoint="CENTER">
-									<Offset x="-110" y="-35" />
+									<Offset x="-120" y="-25" />
 								</Anchor>
 							</Anchors>
 						</FontString>
@@ -200,7 +200,7 @@
 					<Frame name="LFGMM_LfgTab_DungeonsDropDown" inherits="UIDropDownMenuTemplate">
 						<Anchors>
 							<Anchor point="CENTER" relativePoint="TOP">
-								<Offset x="0" y="-80" />
+								<Offset x="0" y="-70" />
 							</Anchor>
 						</Anchors>
 					</Frame>
@@ -208,7 +208,7 @@
 					<Button name="LFGMM_LfgTab_StartStopSearchButton" text="Start search" inherits="UIPanelButtonTemplate">
 						<Anchors>
 							<Anchor point="CENTER" relativePoint="CENTER">
-								<Offset x="0" y="0" />
+								<Offset x="0" y="10" />
 							</Anchor>
 						</Anchors>
 
@@ -218,7 +218,7 @@
 					<CheckButton name="LFGMM_LfgTab_MatchLfgCheckBox" inherits="ChatConfigCheckButtonTemplate">
 						<Anchors>
 							<Anchor point="CENTER" relativePoint="CENTER">
-								<Offset x="-50" y="-35" />
+								<Offset x="-50" y="-25" />
 							</Anchor>
 						</Anchors>
 					</CheckButton>
@@ -226,7 +226,7 @@
 					<CheckButton name="LFGMM_LfgTab_MatchLfmCheckBox" inherits="ChatConfigCheckButtonTemplate">
 						<Anchors>
 							<Anchor point="CENTER" relativePoint="CENTER">
-								<Offset x="10" y="-35" />
+								<Offset x="10" y="-25" />
 							</Anchor>
 						</Anchors>
 					</CheckButton>
@@ -234,7 +234,7 @@
 					<CheckButton name="LFGMM_LfgTab_MatchUnknownCheckBox" inherits="ChatConfigCheckButtonTemplate">
 						<Anchors>
 							<Anchor point="CENTER" relativePoint="CENTER">
-								<Offset x="70" y="-35" />
+								<Offset x="70" y="-25" />
 							</Anchor>
 						</Anchors>
 					</CheckButton>
@@ -242,7 +242,7 @@
 					<CheckButton name="LFGMM_LfgTab_AutoStopCheckBox" inherits="ChatConfigCheckButtonTemplate">
 						<Anchors>
 							<Anchor point="CENTER" relativePoint="CENTER">
-								<Offset x="-105" y="-65" />
+								<Offset x="-115" y="-55" />
 							</Anchor>
 						</Anchors>
 					</CheckButton>
@@ -250,7 +250,7 @@
 					<CheckButton name="LFGMM_LfgTab_EnableBroadcastCheckBox" inherits="ChatConfigCheckButtonTemplate">
 						<Anchors>
 							<Anchor point="CENTER" relativePoint="CENTER">
-								<Offset x="-80" y="-95" />
+								<Offset x="-90" y="-85" />
 							</Anchor>
 						</Anchors>
 					</CheckButton>
@@ -299,7 +299,7 @@
 						<FontString text="Dungeon:" inherits="GameFontNormal">
 							<Anchors>
 								<Anchor point="CENTER" relativePoint="TOP">
-									<Offset x="0" y="-50" />
+									<Offset x="0" y="-45" />
 								</Anchor>
 							</Anchors>
 						</FontString>
@@ -317,7 +317,7 @@
 						<FontString name="LFGMM_LfmTab_MatchOnText" text="Match on:" inherits="GameFontNormal">
 							<Anchors>
 								<Anchor point="CENTER" relativePoint="CENTER">
-									<Offset x="-110" y="-35" />
+									<Offset x="-120" y="-25" />
 								</Anchor>
 							</Anchors>
 						</FontString>
@@ -336,7 +336,7 @@
 					<Frame name="LFGMM_LfmTab_DungeonDropDown" inherits="UIDropDownMenuTemplate">
 						<Anchors>
 							<Anchor point="CENTER" relativePoint="TOP">
-								<Offset x="0" y="-80" />
+								<Offset x="0" y="-70" />
 							</Anchor>
 						</Anchors>
 					</Frame>
@@ -344,7 +344,7 @@
 					<Button name="LFGMM_LfmTab_StartStopSearchButton" text="Start search" inherits="UIPanelButtonTemplate">
 						<Anchors>
 							<Anchor point="CENTER" relativePoint="CENTER">
-								<Offset x="0" y="0" />
+								<Offset x="0" y="10" />
 							</Anchor>
 						</Anchors>
 
@@ -354,7 +354,7 @@
 					<CheckButton name="LFGMM_LfmTab_MatchLfgCheckBox" inherits="ChatConfigCheckButtonTemplate">
 						<Anchors>
 							<Anchor point="CENTER" relativePoint="CENTER">
-								<Offset x="-50" y="-35" />
+								<Offset x="-50" y="-25" />
 							</Anchor>
 						</Anchors>
 					</CheckButton>
@@ -362,7 +362,7 @@
 					<CheckButton name="LFGMM_LfmTab_MatchLfmCheckBox" inherits="ChatConfigCheckButtonTemplate">
 						<Anchors>
 							<Anchor point="CENTER" relativePoint="CENTER">
-								<Offset x="10" y="-35" />
+								<Offset x="10" y="-25" />
 							</Anchor>
 						</Anchors>
 					</CheckButton>
@@ -370,7 +370,7 @@
 					<CheckButton name="LFGMM_LfmTab_MatchUnknownCheckBox" inherits="ChatConfigCheckButtonTemplate">
 						<Anchors>
 							<Anchor point="CENTER" relativePoint="CENTER">
-								<Offset x="70" y="-35" />
+								<Offset x="70" y="-25" />
 							</Anchor>
 						</Anchors>
 					</CheckButton>
@@ -378,7 +378,7 @@
 					<CheckButton name="LFGMM_LfmTab_AutoStopCheckBox" inherits="ChatConfigCheckButtonTemplate">
 						<Anchors>
 							<Anchor point="CENTER" relativePoint="CENTER">
-								<Offset x="-100" y="-65" />
+								<Offset x="-110" y="-55" />
 							</Anchor>
 						</Anchors>
 					</CheckButton>
@@ -386,7 +386,7 @@
 					<CheckButton name="LFGMM_LfmTab_EnableBroadcastCheckBox" inherits="ChatConfigCheckButtonTemplate">
 						<Anchors>
 							<Anchor point="CENTER" relativePoint="CENTER">
-								<Offset x="-80" y="-95" />
+								<Offset x="-90" y="-85" />
 							</Anchor>
 						</Anchors>
 					</CheckButton>
@@ -442,7 +442,7 @@
 					<Frame name="LFGMM_ListTab_MessageTypeDropDown" inherits="UIDropDownMenuTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
-								<Offset x="155" y="-32" />
+								<Offset x="165" y="-32" />
 							</Anchor>
 						</Anchors>
 					</Frame>
@@ -450,7 +450,7 @@
 					<Frame name="LFGMM_ListTab_ContextMenuDropDown" inherits="UIDropDownMenuTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
-								<Offset x="155" y="-32" />
+								<Offset x="165" y="-32" />
 							</Anchor>
 						</Anchors>
 					</Frame>
@@ -814,7 +814,7 @@
 			<Button name="$parentTab1" id="1" text="LFG" inherits="CharacterFrameTabButtonTemplate">
 				<Anchors>
 					<Anchor point="CENTER" relativePoint="BOTTOMLEFT">
-						<Offset x="60" y="-17" />
+						<Offset x="65" y="-15" />
 					</Anchor>
 				</Anchors>
 			</Button>
@@ -822,7 +822,7 @@
 			<Button name="$parentTab2" id="2" text="LFM" inherits="CharacterFrameTabButtonTemplate">
                <Anchors>
                    <Anchor point="CENTER" relativePoint="BOTTOMLEFT">
-                       <Offset x="135" y="-14" />
+                       <Offset x="140" y="-15" />
                    </Anchor>
                </Anchors>
 			</Button>
@@ -830,7 +830,7 @@
 			<Button name="$parentTab3" id="3" text="List" inherits="CharacterFrameTabButtonTemplate">
 				<Anchors>
 					<Anchor point="CENTER" relativePoint="BOTTOMRIGHT">
-						<Offset x="-140" y="-14" />
+						<Offset x="-140" y="-15" />
 					</Anchor>
 				</Anchors>
 			</Button>
@@ -838,7 +838,7 @@
 			<Button name="$parentTab4" id="4" text="Settings" inherits="CharacterFrameTabButtonTemplate">
                <Anchors>
                    <Anchor point="CENTER" relativePoint="BOTTOMRIGHT">
-                       <Offset x="-60" y="-14" />
+                       <Offset x="-65" y="-15" />
                    </Anchor>
                </Anchors>
            </Button>

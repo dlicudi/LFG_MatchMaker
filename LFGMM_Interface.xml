@@ -1522,7 +1522,7 @@
 			</Anchor>
 		</Anchors>
 		
-		<Size x="250" y="90" />
+		<Size x="300" y="105" />
 		
 		<Layers>
 			<Layer level="OVERLAY">
@@ -1534,26 +1534,35 @@
 					</Anchors>
 					<Color a="1" r="0" g="1" b="0" />
 				</FontString>
+				
+				<FontString name="LFGMM_BroadcastWindow_Warning" text="(Skipping or closing disables broadcasting)" inherits="GameFontHighlightSmall">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT">
+							<Offset x="-8" y="8" />
+						</Anchor>
+					</Anchors>
+					<Color a="1" r="0.7" g="0.7" b="0.7" />
+				</FontString>
 			</Layer>
 		</Layers>
 		
 		<Frames>
 			<Button name="LFGMM_BroadcastWindow_BroadcastButton" text="Broadcast" inherits="UIPanelButtonTemplate">
 				<Anchors>
-					<Anchor point="LEFT" relativePoint="CENTER">
-						<Offset x="-50" y="-8" />
+					<Anchor point="CENTER" relativePoint="CENTER">
+						<Offset x="-80" y="-8" />
 					</Anchor>
 				</Anchors>
-				<Size x="90" y="25" />
+				<Size x="80" y="25" />
 			</Button>
 			
-			<Button name="LFGMM_BroadcastWindow_CancelButton" text="Cancel" inherits="UIPanelButtonTemplate">
+			<Button name="LFGMM_BroadcastWindow_CancelButton" text="Skip broadcast" inherits="UIPanelButtonTemplate">
 				<Anchors>
-					<Anchor point="RIGHT" relativePoint="CENTER">
-						<Offset x="50" y="-8" />
+					<Anchor point="CENTER" relativePoint="CENTER">
+						<Offset x="80" y="-8" />
 					</Anchor>
 				</Anchors>
-				<Size x="90" y="25" />
+				<Size x="110" y="25" />
 			</Button>
 		</Frames>
 	</Frame>

@@ -32,8 +32,13 @@ function LFGMM_BroadcastWindow_Initialize()
 	LFGMM_BroadcastWindow:SetScript("OnDragStart", LFGMM_BroadcastWindow.StartMoving);
 	LFGMM_BroadcastWindow:SetScript("OnDragStop", LFGMM_BroadcastWindow.StopMovingOrSizing);
 	LFGMM_BroadcastWindow:SetScript("OnShow", function() PlaySound(838); end);
+	LFGMM_BroadcastWindow:SetScript("OnHide", function() 
+		-- Ensure broadcast lock is reset when window is closed by any means
+		LFGMM_GLOBAL.BROADCAST_LOCK = false;
+	end);
 	
 	LFGMM_BroadcastWindow_BroadcastButton:SetScript("OnClick", LFGMM_BroadcastWindow_BroadcastButton_OnClick);
+	LFGMM_BroadcastWindow_CancelButton:SetScript("OnClick", LFGMM_BroadcastWindow_CancelButton_OnClick);
 end
 
 
@@ -59,6 +64,12 @@ function LFGMM_BroadcastWindow_BroadcastButton_OnClick()
 
 	-- Hide
 	LFGMM_BroadcastWindow:Hide();
+end
+
+
+function LFGMM_BroadcastWindow_CancelButton_OnClick()
+	-- Cancel the broadcast and hide window
+	LFGMM_BroadcastWindow_CancelBroadcast();
 end
 
 

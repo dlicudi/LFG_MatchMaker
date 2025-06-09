@@ -47,6 +47,45 @@ function LFGMM_MinimapButton_Initialize()
 			OnClick = LFGMM_MinimapButton_Button_OnClick,
 			OnTooltipShow = function (tooltip)
 				tooltip:AddLine("LFG MatchMaker", 1, 1, 1);
+				
+				-- Add search status information
+				local lfgRunning = LFGMM_DB.SEARCH.LFG.Running;
+				local lfmRunning = LFGMM_DB.SEARCH.LFM.Running;
+				
+				if (lfgRunning or lfmRunning) then
+					tooltip:AddLine(" ");  -- Blank line for spacing
+					
+					if (lfgRunning) then
+						tooltip:AddLine("• LFG Search: Active", 0, 1, 0);  -- Green text
+						
+						-- Show selected dungeons count
+						local dungeonCount = 0;
+						for _ in pairs(LFGMM_DB.SEARCH.LFG.Dungeons) do
+							dungeonCount = dungeonCount + 1;
+						end
+						if (dungeonCount > 0) then
+							tooltip:AddLine("  " .. dungeonCount .. " dungeon(s) selected", 0.8, 0.8, 0.8);
+						end
+					end
+					
+					if (lfmRunning) then
+						tooltip:AddLine("• LFM Search: Active", 0, 1, 0);  -- Green text
+						
+						-- Show selected dungeon name if available
+						if (LFGMM_DB.SEARCH.LFM.Dungeon) then
+							local dungeonName = LFGMM_Utility_GetDungeonNameById(LFGMM_DB.SEARCH.LFM.Dungeon);
+							if (dungeonName) then
+								tooltip:AddLine("  " .. dungeonName, 0.8, 0.8, 0.8);
+							end
+						end
+					end
+				else
+					tooltip:AddLine(" ");  -- Blank line for spacing
+					tooltip:AddLine("No active searches", 0.6, 0.6, 0.6);  -- Gray text
+				end
+				
+				tooltip:AddLine(" ");  -- Blank line for spacing
+				tooltip:AddLine("Click to open", 0.5, 0.5, 1);  -- Light blue text
 			end,
 		}
 	);

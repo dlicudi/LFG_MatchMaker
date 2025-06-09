@@ -1,10 +1,10 @@
 <!--
-	LFG MatchMaker - Addon for World of Warcraft.
-	Version: 1.1.0
-	URL: https://github.com/AvilanHauxen/LFG_MatchMaker
+	LFG MatchMaker Continued - Addon for World of Warcraft.
+	Version: 1.2.0
+	Original work: https://github.com/AvilanHauxen/LFG_MatchMaker
 	Copyright (C) 2019-2020 L.I.R.
 
-	This file is part of 'LFG MatchMaker' addon for World of Warcraft.
+	This file is part of 'LFG MatchMaker Continued' addon for World of Warcraft.
 
     'LFG MatchMaker' is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -134,7 +134,7 @@
 			<Anchor point="CENTER"/>
 		</Anchors>
 
-		<Size x="420" y="430" />
+		<Size x="420" y="460" />
 		
 		<Layers>
 			<Layer>
@@ -853,7 +853,7 @@
 			</Anchor>
 		</Anchors>
 
-		<Size x="280" y="150" />
+		<Size x="280" y="200" />
 
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -995,7 +995,7 @@
 			</Anchor>
 		</Anchors>
 
-		<Size x="280" y="120" />
+		<Size x="280" y="170" />
 
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -1098,29 +1098,25 @@
 	</Frame>
 	
 	<!-- LIST GROUP INFO WINDOW -->
-	<Frame name="LFGMM_ListTab_MessageInfoWindow" hidden="true" enableMouse="true" frameStrata="HIGH" parent="LFGMM_MainWindow" inherits="TooltipBorderedFrameTemplate">
+	<Frame name="LFGMM_ListTab_MessageInfoWindow" hidden="true" enableMouse="true" frameStrata="HIGH" parent="LFGMM_MainWindow" inherits="BasicFrameTemplate">
 		<Anchors>
 			<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
 				<Offset x="10" y="-2" />
 			</Anchor>
 		</Anchors>
 
-		<Size x="300" y="200" />
+		<Size x="300" y="280" />
 
 		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture file="Interface\Tooltips\UI-Tooltip-Background" setAllPoints="true">
-					<Color a="0.95" r="0" g="0" b="0" />
-				</Texture>
-			</Layer>
 			<Layer level="OVERLAY">
 				<!-- Player name as title -->
-				<FontString name="LFGMM_ListTab_MessageInfoWindow_PlayerText" inherits="GameFontNormalLarge">
+				<FontString name="LFGMM_ListTab_MessageInfoWindow_PlayerText" inherits="GameFontNormal">
 					<Anchors>
-						<Anchor point="TOP">
-							<Offset x="0" y="-12" />
+						<Anchor point="CENTER" relativePoint="TOP">
+							<Offset x="0" y="-11" />
 						</Anchor>
 					</Anchors>
+					<Color a="1" r="0" g="1" b="0" />
 				</FontString>
 
 				<!-- Player info section with clean background -->
@@ -1307,7 +1303,7 @@
 			</Anchor>
 		</Anchors>
 
-		<Size x="280" y="120" />
+		<Size x="280" y="170" />
 		
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -1417,7 +1413,7 @@
 			</Anchor>
 		</Anchors>
 
-		<Size x="300" y="140" />
+		<Size x="300" y="180" />
 		
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -1519,7 +1515,7 @@
 	</Frame>
 	
 	<!-- BROADCAST WINDOW -->
-	<Frame name="LFGMM_BroadcastWindow" hidden="true" enableMouse="true" movable="true" frameStrata="HIGH" topLevel="true" parent="UIParent">
+	<Frame name="LFGMM_BroadcastWindow" hidden="true" enableMouse="true" movable="true" frameStrata="HIGH" topLevel="true" parent="UIParent" inherits="BasicFrameTemplate">
 		<Anchors>
 			<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
 				<Offset x="50" y="-125" />
@@ -1529,24 +1525,11 @@
 		<Size x="250" y="90" />
 		
 		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture name="$parentBackground" file="Interface\FriendsFrame\UI-Toast-Background" setAllPoints="true" />
-				<Texture name="$parentBorder" file="Interface\DialogFrame\UI-DialogBox-Border" setAllPoints="true" />
-			</Layer>
 			<Layer level="OVERLAY">
-				<Texture name="LFGMM_BroadcastWindow_Header" file="Interface\DialogFrame\UI-DialogBox-Header">
-					<Anchors>
-						<Anchor point="TOP">
-							<Offset x="0" y="12" />
-						</Anchor>
-					</Anchors>
-					<Size x="330" y="64" />
-				</Texture>
-				
 				<FontString name="LFGMM_BroadcastWindow_Title" inherits="GameFontNormal">
 					<Anchors>
-						<Anchor point="CENTER" relativeTo="LFGMM_BroadcastWindow_Header">
-							<Offset x="0" y="11" />
+						<Anchor point="CENTER" relativePoint="TOP">
+							<Offset x="0" y="-11" />
 						</Anchor>
 					</Anchors>
 					<Color a="1" r="0" g="1" b="0" />
@@ -1557,11 +1540,20 @@
 		<Frames>
 			<Button name="LFGMM_BroadcastWindow_BroadcastButton" text="Broadcast" inherits="UIPanelButtonTemplate">
 				<Anchors>
-					<Anchor point="CENTER" relativePoint="CENTER">
-						<Offset y="-8" />
+					<Anchor point="LEFT" relativePoint="CENTER">
+						<Offset x="-50" y="-8" />
 					</Anchor>
 				</Anchors>
-				<Size x="120" y="25" />
+				<Size x="90" y="25" />
+			</Button>
+			
+			<Button name="LFGMM_BroadcastWindow_CancelButton" text="Cancel" inherits="UIPanelButtonTemplate">
+				<Anchors>
+					<Anchor point="RIGHT" relativePoint="CENTER">
+						<Offset x="50" y="-8" />
+					</Anchor>
+				</Anchors>
+				<Size x="90" y="25" />
 			</Button>
 		</Frames>
 	</Frame>

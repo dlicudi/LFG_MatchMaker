@@ -718,8 +718,8 @@ function LFGMM_ListTab_MessageInfoWindow_Refresh()
 
 	-- Window size
 	local targetSize = LFGMM_ListTab_MessageInfoWindow_MessageText:GetHeight() + 125;
-	if (targetSize < 200) then
-		targetSize = 200;
+	if (targetSize < 280) then
+		targetSize = 280;
 	end
 	LFGMM_ListTab_MessageInfoWindow:SetHeight(targetSize);
 

@@ -73,7 +73,26 @@ function LFGMM_MinimapButton_Initialize()
 						
 						-- Show selected dungeon name if available
 						if (LFGMM_DB.SEARCH.LFM.Dungeon) then
-							local dungeonName = LFGMM_Utility_GetDungeonNameById(LFGMM_DB.SEARCH.LFM.Dungeon);
+							local dungeonName = nil;
+							
+							-- Try different possible locations for dungeons data
+							local dungeonsTable = nil;
+							if (LFGMM_DB and LFGMM_DB.DUNGEONS) then
+								dungeonsTable = LFGMM_DB.DUNGEONS;
+							elseif (LFGMM_GLOBAL and LFGMM_GLOBAL.DUNGEONS) then
+								dungeonsTable = LFGMM_GLOBAL.DUNGEONS;
+							end
+							
+							if (dungeonsTable) then
+								for _, dungeon in pairs(dungeonsTable) do
+									if (tonumber(dungeon.Index) == tonumber(LFGMM_DB.SEARCH.LFM.Dungeon)) then
+										dungeonName = dungeon.Name;
+										break;
+									end
+								end
+							end
+							
+							-- Show dungeon name if found
 							if (dungeonName) then
 								tooltip:AddLine("  " .. dungeonName, 0.8, 0.8, 0.8);
 							end

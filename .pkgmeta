@@ -1,0 +1,8 @@
+package-as: LFG_MatchMaker_Continued
+ignore:
+  - README.md
+  - CLAUDE.md
+  - docs/
+  - tests/
+  - .vscode/
+  - screenshots/

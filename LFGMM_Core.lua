@@ -288,7 +288,7 @@ function LFGMM_Core_Initialize()
 	
 	LFGMM_GLOBAL.READY = true;
 
-	print("|cff00ff00LFG MatchMaker Continued|r |cffaaaaaa(v1.2.2)|r by |cffff8040Dubhan-PyrewoodVillage|r loaded. Type |cffffff00/lfgmm|r for options.")
+	print("|cff00ff00LFG MatchMaker Continued|r |cffaaaaaa(v1.2.3)|r by |cffff8040Dubhan-PyrewoodVillage|r loaded. Type |cffffff00/lfgmm|r for options.")
 end
 
 

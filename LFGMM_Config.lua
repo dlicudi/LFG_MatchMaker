@@ -26,7 +26,7 @@
 
 
 -- Centralized version management
-LFGMM_ADDON_VERSION = "1.2.4"
+LFGMM_ADDON_VERSION = "1.2.5-alpha"
 
 function LFGMM_Load()
 	LFGMM_DB_VERSION = 4;

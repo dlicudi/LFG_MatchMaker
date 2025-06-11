@@ -2,6 +2,7 @@ package-as: LFG_MatchMaker_Continued
 ignore:
   - README.md
   - CLAUDE.md
+  - update_version.sh
   - docs/
   - tests/
   - .vscode/

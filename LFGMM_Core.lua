@@ -1,7 +1,6 @@
 --[[
 	LFG MatchMaker - Addon for World of Warcraft.
-	Version: 1.1.4
-	URL: https://github.com/AvilanHauxen/LFG_MatchMaker
+	URL: https://github.com/dlicudi/LFG_MatchMaker
 	Copyright (C) 2019-2020 L.I.R.
 
 	This file is part of 'LFG MatchMaker' addon for World of Warcraft.
@@ -288,7 +287,7 @@ function LFGMM_Core_Initialize()
 	
 	LFGMM_GLOBAL.READY = true;
 
-	print("|cff00ff00LFG MatchMaker Continued|r |cffaaaaaa(v1.2.3)|r by |cffff8040Dubhan-PyrewoodVillage|r loaded. Type |cffffff00/lfgmm|r for options.")
+	print("|cff00ff00LFG MatchMaker Continued|r |cffaaaaaa(v" .. LFGMM_ADDON_VERSION .. ")|r by |cffff8040Dubhan-PyrewoodVillage|r loaded. Type |cffffff00/lfgmm|r for options.")
 end
 
 

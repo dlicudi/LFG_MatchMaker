@@ -1,0 +1,6 @@
+1.2.5
+- Code refactoring: Split LFGMM_Variables.lua into separate modules for better maintainability
+- No functional changes
+
+1.2.4  
+- Previous release

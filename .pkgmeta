@@ -7,3 +7,4 @@ ignore:
   - tests/
   - .vscode/
   - screenshots/
+manual-changelog: CHANGELOG.txt

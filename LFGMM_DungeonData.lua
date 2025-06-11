@@ -21,448 +21,11 @@
 
 
 ------------------------------------------------------------------------------------------------------------------------
--- SAVED VARIABLES
+-- DUNGEON DATA
 ------------------------------------------------------------------------------------------------------------------------
 
 
--- Centralized version management
-LFGMM_ADDON_VERSION = "1.2.4"
-
-function LFGMM_Load()
-	LFGMM_DB_VERSION = 4;
-	
-	-- Get locale language
-	local locale = GetLocale();
-	if (locale == "deDE") then
-		locale = "DE";
-	elseif (locale == "frFR") then
-		locale = "FR";
-	elseif (locale == "esES" or locale == "esMX") then
-		locale = "ES";
-	else
-		locale = nil;
-	end
-
-	-- Database
-	if (LFGMM_DB == nil) then
-		LFGMM_DB = {
-			VERSION = LFGMM_DB_VERSION,
-			SETTINGS = {
-				MessageTimeout = 30,
-				MaxMessageAge = 10,
-				BroadcastInterval = 2,
-				InfoWindowLocation = "right",
-				RequestInviteMessage = "",
-				RequestInviteMessageTemplate = "Invite for group ({L} {C})",
-				ShowQuestLogButton = true,
-				ShowMinimapButton = true,
-				HideLowLevel = false,
-				HideHighLevel = false,
-				HidePvp = false,
-				HideRaids = false,
-				MinimapLibDBSettings = {},
-				IdentifierLanguages = { "EN" },
-				UseTradeChannel = false,
-				UseGeneralChannel = false,
-			},
-			LIST = {
-				Dungeons = {},
-				ShowUnknownDungeons = false,
-				MessageTypes = {
-					Unknown = false,
-					Lfg = true,
-					Lfm = true,
-				}
-			},
-			SEARCH = {
-				LastBroadcast = time() - 600,
-				LFG = {
-					Running = false,
-					MatchLfg = false,
-					MatchUnknown = true,
-					AutoStop = true,
-					Broadcast = false,
-					BroadcastMessage = "",
-					BroadcastMessageTemplate = "{L} {C} LFG {A}",
-					Dungeons = {},
-				},
-				LFM = {
-					Running = false,
-					MatchLfm = false,
-					MatchUnknown = true,
-					AutoStop = true,
-					Broadcast = false,
-					BroadcastMessage = "",
-					BroadcastMessageTemplate = "LF{N}M {D}",
-					Dungeon = nil,
-				}
-			}
-		};
-		
-		-- Add locale identifier language
-		if (locale ~= nil) then
-			table.insert(LFGMM_DB.SETTINGS.IdentifierLanguages, locale);
-		end
-
-		-- Add all dungeons to list selection
-		for _,dungeon in ipairs(LFGMM_GLOBAL.DUNGEONS) do
-			table.insert(LFGMM_DB.LIST.Dungeons, dungeon.Index);
-		end
-
-	else
-		if (LFGMM_DB.VERSION <= 1) then
-			LFGMM_DB.SETTINGS.IdentifierLanguages = { "EN" };
-
-			-- Add locale identifier language
-			if (locale ~= nil) then
-				table.insert(LFGMM_DB.SETTINGS.IdentifierLanguages, locale);
-			end
-		end
-		
-		if (LFGMM_DB.VERSION <= 2) then
-			LFGMM_DB.SEARCH.LFG.AutoStop = true;
-			LFGMM_DB.SEARCH.LFM.AutoStop = true;
-		end
-		
-		if (LFGMM_DB.VERSION <= 3) then
-			LFGMM_DB.SETTINGS.MinimapLibDBSettings = {};
-			LFGMM_DB.SETTINGS.InfoWindowLocation = "right";
-			LFGMM_DB.SETTINGS.UseTradeChannel = false;
-			LFGMM_DB.SETTINGS.UseGeneralChannel = false;
-		end
-		
-		if (LFGMM_DB.VERSION < LFGMM_DB_VERSION) then
-			LFGMM_DB.VERSION = LFGMM_DB_VERSION;
-		end
-	end
-	
-	-- OnLoad search = off
-	LFGMM_DB.SEARCH.LFG.Running = false;
-	LFGMM_DB.SEARCH.LFM.Running = false;
-end
-
-
-------------------------------------------------------------------------------------------------------------------------
--- GLOBAL VARIABLES
-------------------------------------------------------------------------------------------------------------------------
-
-
-LFGMM_GLOBAL = {
-	READY = false,
-	LIST_SCROLL_INDEX = 1,
-	SEARCH_LOCK = false,
-	BROADCAST_LOCK = false,
-	AUTOSTOP_AVAILABLE = true,
-	WHO_COOLDOWN = 0,
-	PLAYER_NAME = "",
-	PLAYER_LEVEL = 0,
-	PLAYER_CLASS = "",
-	LFG_CHANNEL_NAME = "LookingForGroup",
-	GENERAL_CHANNEL_NAME = "General",
-	TRADE_CHANNEL_NAME = "Trade",
-	TRADE_CHANNEL_AVAILABLE = false,
-	GROUP_MEMBERS = {},
-	MESSAGES = {},
-	MESSAGE_SORT_INDEX = 1,
-	LANGUAGES = {
-		{ 
-			Code = "EN",
-			Name = "English",
-		},
-		{ 
-			Code = "DE",
-			Name = "German",
-		},
-		{ 
-			Code = "FR",
-			Name = "French",
-		},
-		{ 
-			Code = "ES",
-			Name = "Spanish",
-		},
-		-- { 
-			-- Code = "RU",
-			-- Name = "Russian",
-		-- },
-	},
-	CLASSES = {
-		WARRIOR = {
-			Name = "Warrior",
-			LocalizedName = LOCALIZED_CLASS_NAMES_MALE.WARRIOR,
-			IconCoordinates = CLASS_ICON_TCOORDS.WARRIOR,
-			Color = "|cFFC79C6E",
-		},
-		PALADIN = {
-			Name = "Paladin",
-			LocalizedName = LOCALIZED_CLASS_NAMES_MALE.PALADIN,
-			IconCoordinates = CLASS_ICON_TCOORDS.PALADIN,
-			Color = "|cFFF58CBA",
-		},
-		HUNTER = {
-			Name = "Hunter",
-			LocalizedName = LOCALIZED_CLASS_NAMES_MALE.HUNTER,
-			IconCoordinates = CLASS_ICON_TCOORDS.HUNTER,
-			Color = "|cFFABD473",
-		},
-		ROGUE = {
-			Name = "Rogue",
-			LocalizedName = LOCALIZED_CLASS_NAMES_MALE.ROGUE,
-			IconCoordinates = CLASS_ICON_TCOORDS.ROGUE,
-			Color = "|cFFFFF569",
-		},
-		PRIEST = {
-			Name = "Priest",
-			LocalizedName = LOCALIZED_CLASS_NAMES_MALE.PRIEST,
-			IconCoordinates = CLASS_ICON_TCOORDS.PRIEST,
-			Color = "|cFFFFFFFF",
-		},
-		SHAMAN = {
-			Name = "Shaman",
-			LocalizedName = LOCALIZED_CLASS_NAMES_MALE.SHAMAN,
-			IconCoordinates = CLASS_ICON_TCOORDS.SHAMAN,
-			Color = "|cFF0070DE",
-		},
-		MAGE = {
-			Name = "Mage",
-			LocalizedName = LOCALIZED_CLASS_NAMES_MALE.MAGE,
-			IconCoordinates = CLASS_ICON_TCOORDS.MAGE,
-			Color = "|cFF69CCF0",
-		},
-		WARLOCK = {
-			Name = "Warlock",
-			LocalizedName = LOCALIZED_CLASS_NAMES_MALE.WARLOCK,
-			IconCoordinates = CLASS_ICON_TCOORDS.WARLOCK,
-			Color = "|cFF9482C9",
-		},
-		DRUID = {
-			Name = "Druid",
-			LocalizedName = LOCALIZED_CLASS_NAMES_MALE.DRUID,
-			IconCoordinates = CLASS_ICON_TCOORDS.DRUID,
-			Color = "|cFFFF7D0A",
-		},
-	},
-	MESSAGETYPE_IDENTIFIERS = {
-		EN = {
-			{
-				Type = "LFG",
-				Identifiers = {
-					"lfg",
-					"lf[%W]*group",
-					"looking[%W]*for[%W]*group",
-					"dps[%W]*lf",
-					"tank[%W]*lf",
-					"heal[e]?[r]?[%W]*lf",
-					"dps[%W]*looking[%W]*for",
-					"tank[%W]*looking[%W]*for",
-					"heal[e]?[r]?[%W]*looking[%W]*for",
-					"pri[e]?st[%W]*lf",
-					"warr[i]?[o]?[r]?[%W]*lf",
-					"mage[%W]*lf",
-					"[w]?[a]?[r]?lock[%W]*lf",
-					"shaman[%W]*lf",
-					"pala[d]?[i]?[n]?[%W]*lf",
-					"hunt[e]?[r]?[%W]*lf",
-					"ro[u]?g[u]?e[%W]*lf",
-					"druid[%W]*lf",
-					"pri[e]?st[%W]*looking[%W]*for",
-					"warr[i]?[o]?[r]?[%W]*looking[%W]*for",
-					"mage[%W]*looking[%W]*for",
-					"[w]?[a]?[r]?lock[%W]*looking[%W]*for",
-					"shaman[%W]*looking[%W]*for",
-					"pala[d]?[i]?[n]?[%W]*looking[%W]*for",
-					"hunt[e]?[r]?[%W]*looking[%W]*for",
-					"ro[u]?g[u]?e[%W]*looking[%W]*for",
-					"druid[%W]*looking[%W]*for",
-				}
-			},
-			{
-				Type = "LFM",
-				Identifiers = {
-					"lf[%W]*[%d]+",
-					"lf[%W]*[%d]*[%W]*m",
-					"lf[%W]*[%d]*[ax]?[%W]*dps",
-					"lf[%W]*[%d]*[ax]?[%W]*tank",
-					"lf[%W]*[%d]*[ax]?[%W]*heal",
-					"lf[%W]*[%d]*[ax]?[%W]*dd",
-					"lf[%W]*[%d]*[ax]?[%W]*caster",
-					"lf[%W]*[%d]*[ax]?[%W]*mele",
-					"lf[%W]*[%d]*[ax]?[%W]*range",
-					"looking[%W]*for[%W]*[%d]*[ax]?[%W]*dps",
-					"looking[%W]*for[%W]*[%d]*[ax]?[%W]*tank",
-					"looking[%W]*for[%W]*[%d]*[ax]?[%W]*heal",
-					"looking[%W]*for[%W]*[%d]*[ax]?[%W]*dd",
-					"looking[%W]*for[%W]*[%d]*[ax]?[%W]*caster",
-					"looking[%W]*for[%W]*[%d]*[ax]?[%W]*mele",
-					"looking[%W]*for[%W]*[%d]*[ax]?[%W]*range",
-					"lf[%W]*[%d]*[ax]?[%W]*pri[e]?st",
-					"lf[%W]*[%d]*[ax]?[%W]*warr",
-					"lf[%W]*[%d]*[ax]?[%W]*mage",
-					"lf[%W]*[%d]*[ax]?[%W]*[w]?[a]?[r]?lock",
-					"lf[%W]*[%d]*[ax]?[%W]*shaman",
-					"lf[%W]*[%d]*[ax]?[%W]*pala",
-					"lf[%W]*[%d]*[ax]?[%W]*hunt",
-					"lf[%W]*[%d]*[ax]?[%W]*ro[u]?g[u]?e",
-					"lf[%W]*[%d]*[ax]?[%W]*druid",
-					"looking[%W]*for[%W]*[%d]*[ax]?[%W]*pri[e]?st",
-					"looking[%W]*for[%W]*[%d]*[ax]?[%W]*warr",
-					"looking[%W]*for[%W]*[%d]*[ax]?[%W]*mage",
-					"looking[%W]*for[%W]*[%d]*[ax]?[%W]*[w]?[a]?[r]?lock",
-					"looking[%W]*for[%W]*[%d]*[ax]?[%W]*shaman",
-					"looking[%W]*for[%W]*[%d]*[ax]?[%W]*pala",
-					"looking[%W]*for[%W]*[%d]*[ax]?[%W]*hunt",
-					"looking[%W]*for[%W]*[%d]*[ax]?[%W]*ro[u]?g[u]?e",
-					"looking[%W]*for[%W]*[%d]*[ax]?[%W]*druid",
-					"need[%W]*one[%W]*more",
-					"need[%W]*[%d]+[%W]*more",
-					"need[%W]*[%d]*[%W]*dps",
-					"need[%W]*[%d]*[%W]*tank",
-					"need[%W]*[%d]*[%W]*heal",
-					"need[%W]*[%d]*[%W]*dd",
-					"need[%W]*[%d]*[%W]*caster",
-					"need[%W]*[%d]*[%W]*mele",
-					"need[%W]*[%d]*[%W]*range",
-					"seek[%W]*one[%W]*more",
-					"seek[%W]*[%d]+[%W]*more",
-					"seek[%W]*[%d]+[%W]*more",
-					"seek[%W]*[%d]*[%W]*dps",
-					"seek[%W]*[%d]*[%W]*tank",
-					"seek[%W]*[%d]*[%W]*heal",
-					"seek[%W]*[%d]*[%W]*dd",
-					"seek[%W]*[%d]*[%W]*caster",
-					"seek[%W]*[%d]*[%W]*mele",
-					"seek[%W]*[%d]*[%W]*range",
-					"last[%W]*dps",
-					"last[%W]*tank",
-					"last[%W]*heal",
-					"last[%W]*spot",
-					"any[%W]*dps[%W]*for",
-					"any[%W]*tank[%W]*for",
-					"any[%W]*heal[e]?[r]?[%W]*for",
-				}
-			}
-		},
-		-- DE = {},
-		FR = {
-			{
-				Type = "LFG",
-				Identifiers = {
-					"[%d][%d][%W]*dispo[n]?[i]?[b]?[l]?[e]?",
-					"[%d][%d][%W]*cherch[e]?[o]?[n]?[s]?",
-					"[%d][%d][%W]*up[%W]*pour",
-					"[%d][%d][%W]*dps[%W]*pour",
-					"[%d][%d][%W]*tank[%W]*pour",
-					"[%d][%d][%W]*heal[e]?[r]?[%W]*pour",
-					"[%d][%d][%W]*soigneur[%W]*pour",
-					"cherch[e]?[o]?[n]?[s]?[%W]*[d]?[%W]*[u]?[n]?[%d]*[%W]*g[r]?oupe",
-					"cherch[e]?[o]?[n]?[s]?[%W]*[d]?[%W]*[u]?[n]?[%d]*[%W]*grp",
-				}
-			},
-			{
-				Type = "LFM",
-				Identifiers = {
-					"un[%W]*dps[%W]*[d]?[e]?[%W]*dispo[n]?[i]?[b]?[l]?[e]?[%W]*pour",
-					"un[%W]*tank[%W]*[d]?[e]?[%W]*dispo[n]?[i]?[b]?[l]?[e]?[%W]*pour",
-					"un[%W]*heal[e]?[r]?[%W]*[d]?[e]?[%W]*dispo[n]?[i]?[b]?[l]?[e]?[%W]*pour",
-					"un[%W]*soigneur[%W]*[d]?[e]?[%W]*dispo[n]?[i]?[b]?[l]?[e]?[%W]*pour",
-					"un[%W]*dps[%W]*up[%W]*pour",
-					"un[%W]*tank[%W]*up[%W]*pour",
-					"un[%W]*heal[e]?[r]?[%W]*up[%W]*pour",
-					"un[%W]*soigneur[%W]*up[%W]*pour",
-					"un[%W]*dps[%W]*pour",
-					"un[%W]*tank[%W]*pour",
-					"un[%W]*heal[e]?[r]?[%W]*pour",
-					"un[%W]*soigneur[%W]*pour",
-					"un[%W]*dps[%W]*et",
-					"un[%W]*tank[%W]*et",
-					"un[%W]*heal[e]?[r]?[%W]*et",
-					"un[%W]*soigneur[%W]*et",
-					"un[%W]*dps[%W]*ou",
-					"un[%W]*tank[%W]*ou",
-					"un[%W]*heal[e]?[r]?[%W]*ou",
-					"un[%W]*soigneur[%W]*ou",
-					"un[%W]*dps[%W]*un",
-					"un[%W]*tank[%W]*un",
-					"un[%W]*heal[e]?[r]?[%W]*un",
-					"un[%W]*soigneur[%W]*un",
-					"un[%W]*petit[%W]*dps",
-					"un[%W]*petit[%W]*tank",
-					"un[%W]*petit[%W]*heal",
-					"un[%W]*petit[%W]*soigneur",
-					"deux[%W]*dps[%W]*pour",
-					"deux[%W]*dps[%W]*et",
-					"deux[%W]*dps[%W]*ou",
-					"deux[%W]*petit[%W]*dps",
-					"[%d][%W]*petit[%W]*dps",
-					"[%d][%W]*petit[%W]*tank",
-					"[%d][%W]*petit[%W]*heal",
-					"[%d][%W]*petit[%W]*soigneur",
-					"[%d][%W]*dps[%W]*pour",
-					"[%d][%W]*tank[%W]*pour",
-					"[%d][%W]*heal[e]?[r]?[%W]*pour",
-					"[%d][%W]*soigneur[%W]*pour",
-					"[%d][%W]*dps[%W]*et",
-					"[%d][%W]*tank[%W]*et",
-					"[%d][%W]*heal[e]?[r]?[%W]*et",
-					"[%d][%W]*soigneur[%W]*et",
-					"[%d][%W]*dps[%W]*ou",
-					"[%d][%W]*tank[%W]*ou",
-					"[%d][%W]*heal[e]?[r]?[%W]*ou",
-					"[%d][%W]*soigneur[%W]*ou",
-					"besoin[%W]*[d]?[%W]*[u]?[n]?[%d]*[%W]*dps",
-					"besoin[%W]*[d]?[%W]*[u]?[n]?[%d]*[%W]*tank",
-					"besoin[%W]*[d]?[%W]*[u]?[n]?[%d]*[%W]*heal",
-					"besoin[%W]*[d]?[%W]*[u]?[n]?[%d]*[%W]*soigneur",
-					"cherch[e]?[o]?[n]?[s]?[%W]*[d]?[%W]*[u]?[n]?[%d]*[%W]*dps",
-					"cherch[e]?[o]?[n]?[s]?[%W]*[d]?[%W]*[u]?[n]?[%d]*[%W]*tank",
-					"cherch[e]?[o]?[n]?[s]?[%W]*[d]?[%W]*[u]?[n]?[%d]*[%W]*heal",
-					"cherch[e]?[o]?[n]?[s]?[%W]*[d]?[%W]*[u]?[n]?[%d]*[%W]*soigneur",
-					"encore[%W]*un[%W]*dps",
-					"encore[%W]*un[%W]*tank",
-					"encore[%W]*un[%W]*heal",
-					"encore[%W]*un[%W]*soigneur",
-					"encore[%W]*un[%W]*place",
-					"dernier[e]?[%W]*dps",
-					"dernier[e]?[%W]*tank",
-					"dernier[e]?[%W]*heal",
-					"dernier[e]?[%W]*soigneur",
-					"dernier[e]?[%W]*place",
-					"dernier[e]?[%W]*person",
-					"manque[%W]*[u]?[n]?[%d]*[%W]*dps",
-					"manque[%W]*[u]?[n]?[%d]*[%W]*tank",
-					"manque[%W]*[u]?[n]?[%d]*[%W]*heal",
-					"manque[%W]*[u]?[n]?[%d]*[%W]*soigneur",
-					"manque[%W]*[u]?[n]?[%d]*[%W]*person",
-					"dps[%W]*demande",
-					"tank[%W]*demande",
-					"heal[%W]*demande",
-					"soigneur[%W]*demande",
-					"reste[%W]*[%d]+[%W]*place[s]?[%W]*pour",
-					"de[%W]*tout[%W]*pour",
-					"last[%W]*pour",
-					"recrute[%W]*pour",
-					"monte[%W]*g[r]?oupe",
-					"monte[%W]*grp",
-					"[%W]+et[t]?[%W]*go[%W]+",
-					"[%W]+et[t]?[%W]*go$",
-				}
-			},
-			{
-				Type = "LFG",
-				Identifiers = {
-					"dps[%W]*up[%W]*pour",
-					"tank[%W]*up[%W]*pour",
-					"heal[e]?[r]?[%W]*up[%W]*pour",
-					"soigneur[%W]*up[%W]*pour",
-					"dispo[n]?[i]?[b]?[l]?[e]?[%W]+",
-					"dispo[n]?[i]?[b]?[l]?[e]?$",
-				}
-			},
-		},
-		-- ES = {},
-		-- RU = {},
-	},
-	DUNGEONS = {
+LFGMM_GLOBAL.DUNGEONS = {
 		{
 			Index = 1,
 			Name = "Ragefire Chasm",
@@ -502,7 +65,7 @@ LFGMM_GLOBAL = {
 			Name = "Wailing Caverns",
 			Abbreviation = "WC",
 			Identifiers = {
-				EN = { 
+				EN = {
 					"wa[i]?ling[%W]*cavern[s]?",
 					"wc",
 				},
@@ -2446,100 +2009,100 @@ LFGMM_GLOBAL = {
 			MaxLevel = 60,
 			Pvp = true
 		},
+	}
+
+LFGMM_GLOBAL.DUNGEONS_FALLBACK = {
+	{
+		Dungeons = { 3, 39 },
+		Identifiers = {
+			EN = { 
+				"dm",
+			},
+			DE = {},
+			FR = {},
+			ES = {},
+			RU = {},
+		},
 	},
-	DUNGEONS_FALLBACK = {
-		{
-			Dungeons = { 3, 39 },
-			Identifiers = {
-				EN = { 
-					"dm",
-				},
-				DE = {},
-				FR = {},
-				ES = {},
-				RU = {},
+	{
+		Dungeons = { 20, 31 },
+		Identifiers = {
+			EN = {
+				"princes[s]?[%W]*run[s]?",
 			},
-		},
-		{
-			Dungeons = { 20, 31 },
-			Identifiers = {
-				EN = {
-					"princes[s]?[%W]*run[s]?",
-				},
-				DE = {
-					-- Prinzessinen
-					"prin[cz]es[s]?[i]?[n]?[n]?[e]?[n]?[%W]*run[s]?"
-				},
-				FR = {
-					-- Princesse
-					"princes[s]?[e]?[%W]*run[s]?"
-				},
-				ES = {
-					-- Princesa
-					"princes[s]?[a]?[%W]*run[s]?"
-				},
-				RU = {},
+			DE = {
+				-- Prinzessinen
+				"prin[cz]es[s]?[i]?[n]?[n]?[e]?[n]?[%W]*run[s]?"
 			},
-		},
-		{
-			Dungeons = { 48, 49 },
-			Identifiers = {
-				EN = {
-					"aq",
-				},
-				DE = {},
-				FR = {},
-				ES = {},
-				RU = {},
-			}
-		},
-		{
-			Dungeons = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43 },
-			Identifiers = {
-				EN = {
-					"any[%W]*dungeon[s]?",
-					"any[%W]*raid[s]?.-dungeon[s]?",
-					"lfg[%W]*dungeon[s]?",
-				},
-				DE = {},
-				FR = {
-					"dispo[n]?[i]?[b]?[l]?[e]?[%W]*dj",
-					"dispo[n]?[i]?[b]?[l]?[e]?[%W]*donjon[s]?",
-					"dispo[n]?[i]?[b]?[l]?[e]?[%W]*instance[s]?",
-					"dispo[n]?[i]?[b]?[l]?[e]?[%W]*pour[%W]*dj",
-					"dispo[n]?[i]?[b]?[l]?[e]?[%W]*pour[%W]*donjon[s]?",
-					"dispo[n]?[i]?[b]?[l]?[e]?[%W]*pour[%W]*instance[s]?",
-				},
-				ES = {},
-				RU = {},
+			FR = {
+				-- Princesse
+				"princes[s]?[e]?[%W]*run[s]?"
 			},
-		},
-		{
-			Dungeons = { 44, 45, 46, 47, 48, 49, 50 },
-			Identifiers = {
-				EN = {
-					"any[%W]*raid[s]?",
-					"any[%W]*dungeon[s]?.-raid[s]?",
-					"lfg[%W]*raid[s]?",
-				},
-				DE = {},
-				FR = {},
-				ES = {},
-				RU = {},
+			ES = {
+				-- Princesa
+				"princes[s]?[a]?[%W]*run[s]?"
 			},
+			RU = {},
 		},
-		{
-			Dungeons = { 51, 52, 53 },
-			Identifiers = {
-				EN = {
-					"pvp",
-					"premade",
-				},
-				DE = {},
-				FR = {},
-				ES = {},
-				RU = {},
+	},
+	{
+		Dungeons = { 48, 49 },
+		Identifiers = {
+			EN = {
+				"aq",
 			},
-		}
+			DE = {},
+			FR = {},
+			ES = {},
+			RU = {},
+		},
+	},
+	{
+		Dungeons = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43 },
+		Identifiers = {
+			EN = {
+				"any[%W]*dungeon[s]?",
+				"any[%W]*raid[s]?.-dungeon[s]?",
+				"lfg[%W]*dungeon[s]?",
+			},
+			DE = {},
+			FR = {
+				"dispo[n]?[i]?[b]?[l]?[e]?[%W]*dj",
+				"dispo[n]?[i]?[b]?[l]?[e]?[%W]*donjon[s]?",
+				"dispo[n]?[i]?[b]?[l]?[e]?[%W]*instance[s]?",
+				"dispo[n]?[i]?[b]?[l]?[e]?[%W]*pour[%W]*dj",
+				"dispo[n]?[i]?[b]?[l]?[e]?[%W]*pour[%W]*donjon[s]?",
+				"dispo[n]?[i]?[b]?[l]?[e]?[%W]*pour[%W]*instance[s]?",
+			},
+			ES = {},
+			RU = {},
+		},
+	},
+	{
+		Dungeons = { 44, 45, 46, 47, 48, 49, 50 },
+		Identifiers = {
+			EN = {
+				"any[%W]*raid[s]?",
+				"any[%W]*dungeon[s]?.-raid[s]?",
+				"lfg[%W]*raid[s]?",
+			},
+			DE = {},
+			FR = {},
+			ES = {},
+			RU = {},
+		},
+	},
+	{
+		Dungeons = { 51, 52, 53 },
+		Identifiers = {
+			EN = {
+				"pvp",
+				"premade",
+			},
+			DE = {},
+			FR = {},
+			ES = {},
+			RU = {},
+		},
 	}
 }

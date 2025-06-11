@@ -35,6 +35,9 @@ Libs\LibDBIcon-1.0\LibDBIcon-1.0.lua
 # Core Files
 LFGMM_Interface.xml
 LFGMM_Interface.lua
+LFGMM_Config.lua
+LFGMM_Identifiers.lua
+LFGMM_DungeonData.lua
 LFGMM_Core.lua
 LFGMM_Utility.lua
 LFGMM_MinimapButton.lua
@@ -44,4 +47,3 @@ LFGMM_ListTab.lua
 LFGMM_SettingsTab.lua
 LFGMM_PopupWindow.lua
 LFGMM_BroadcastWindow.lua
-LFGMM_Variables.lua

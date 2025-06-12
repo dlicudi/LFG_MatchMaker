@@ -21,7 +21,7 @@
 
 ## Title: LFG MatchMaker Continued
 ## Interface: 11507
-## Version: 1.2.5-alpha
+## Version: 1.2.5
 ## Author: Dubhan-PyrewoodVillage (EU)
 ## Notes: A fork of LFG MatchMaker for WoW Classic Era by L.I.R.
 ## SavedVariablesPerCharacter: LFGMM_DB

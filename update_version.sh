@@ -30,3 +30,13 @@ echo "- LFG_MatchMaker_Continued.toc"
 echo "- LFGMM_Variables.lua (centralized version)"
 echo ""
 echo "The startup message will automatically use the new version."
+
+git add LFG_MatchMaker_Continued.toc LFGMM_Variables.lua
+
+git commit -m "Bump version to $NEW_VERSION"
+
+git tag -a v$NEW_VERSION -m "Version $NEW_VERSION"
+
+git push
+
+git push origin v$NEW_VERSION

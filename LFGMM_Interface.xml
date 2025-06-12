@@ -33,7 +33,7 @@
 
 	<!-- LIST ENTRY TEMPLATE -->
 	<Frame name="LFGMM_ListTab_EntryTemplate" virtual="true" inherits="InsetFrameTemplate3">
-		<Size x="375" y="50" />
+		<Size x="380" y="50" />
 		<Layers>
 			<Layer>
 				<Texture name="$parentClassIcon" file="Interface\TargetingFrame\UI-Classes-Circles">
@@ -66,7 +66,7 @@
 					</Anchors>
 					<Color a="1" r="0" g="1" b="0" />
 				</FontString>
-				<FontString name="$parentType" inherits="GameFontHighlightSmall">
+				<FontString name="$parentType" inherits="GameFontHighlightSmall" justifyH="CENTER">
 					<Anchors>
 						<Anchor point="RIGHT">
 							<Offset x="-10" />
@@ -468,7 +468,7 @@
 					<Frame name="LFGMM_ListTab_Entry1" inherits="LFGMM_ListTab_EntryTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT">
-								<Offset x="5" y="-66" />
+								<Offset x="15" y="-66" />
 							</Anchor>
 						</Anchors>
 					</Frame>

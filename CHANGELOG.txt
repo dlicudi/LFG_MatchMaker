@@ -3,5 +3,5 @@
 - Improved list tab layout: expanded entry frames and better centering for improved visual presentation
 - No functional changes
 
-1.2.4  
+1.2.4
 - Previous release

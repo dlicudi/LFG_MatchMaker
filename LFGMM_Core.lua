@@ -695,6 +695,10 @@ local function LFGMM_Core_HandleGroupRosterUpdate()
 	LFGMM_LfgTab_Refresh()
 	LFGMM_LfmTab_Refresh()
 	LFGMM_PopupWindow_Refresh()
+	
+	-- Update broadcast messages to reflect current group size
+	LFGMM_LfgTab_UpdateBroadcastMessage()
+	LFGMM_LfmTab_UpdateBroadcastMessage()
 end
 
 -- Handle chat channel messages (LFG parsing)

@@ -4,9 +4,18 @@
 # Usage: ./update_version.sh 1.2.4
 
 if [ $# -eq 0 ]; then
-    echo "Usage: $0 <new_version>"
-    echo "Example: $0 1.2.4"
-    exit 1
+    CURRENT_VERSION=$(grep '^## Version:' LFG_MatchMaker_Continued.toc | sed 's/## Version: //')
+    echo "Current version: $CURRENT_VERSION"
+    # Find latest version tag
+    LATEST_TAG=$(git tag --list 'v*' --sort=-v:refname | head -n 1)
+    if [ -n "$LATEST_TAG" ]; then
+        echo "Latest tag: $LATEST_TAG"
+        echo "\nCommits after $LATEST_TAG:"
+        git log --oneline $LATEST_TAG..HEAD
+    else
+        echo "No tags found."
+    fi
+    exit 0
 fi
 
 NEW_VERSION=$1

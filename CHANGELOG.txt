@@ -1,3 +1,6 @@
+1.2.6
+- Enhance group roster update functionality in LFGMM_Core.lua: add updates for broadcast messages to reflect current group size.
+
 1.2.5
 - Code refactoring: Split LFGMM_Variables.lua into separate modules for better maintainability
 - Improved list tab layout: expanded entry frames and better centering for improved visual presentation
